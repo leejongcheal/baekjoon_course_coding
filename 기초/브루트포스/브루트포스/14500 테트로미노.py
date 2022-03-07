@@ -3,6 +3,7 @@
 ##    a   -> 이거 떄문에 dfs포기하고 BFS풀이 했는데 새로운 발상
 # 일단 DFS로 푼다음에 ㅗ모양에 대해서만 다시 조사하는 식으로 풀이 발상
 # ㅗ모양만 인덱스로 풀든가 두개를 뽑은 상태에서 next가 아닌 now에 대해서 dfs돌리기
+# 가지치기 1개를 뽑았을때 val + 3*max(L)이 ans보다 작다면 가지치기 와...
 def dfs(x, y, val, cnt):
     global L, ans, N, M, visit, max_val, steps
     if cnt == 4:
