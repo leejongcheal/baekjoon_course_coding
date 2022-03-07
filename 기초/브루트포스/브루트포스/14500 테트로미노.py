@@ -1,38 +1,34 @@
-# 방문한 곳을 visit [i][j] = 1로 두어서 다른 경로로 방문하는건 일단 생략하고 시작해보자
-# 아니지 BFS로 방문하면 될꺼같은데? -> 메모리 낭비라도 해서 풀자 -> DFS생각 못하겠어
-
+# 발상자체가 아주 멋진문제
 ##   aaa   꼴도 생각을 해야함 ㅋㅋ
-##    a
-from collections import deque
-def bfs(x, y, val ,q):
-    global ans,L,N,M,visit
-    while q:
-        list, val = q.popleft()
-        if len(list) == 4:
-            if val == 23:
-                print(list)
-            ans = max(ans, val)
-            continue
-        for x, y in list:
-            for dx, dy in steps:
-                nx,ny = x +dx, y + dy
-                temp = list + [(nx, ny)]
-                temp.sort()
-                stemp = tuple(temp)
-                if 0 <= nx < N and 0 <= ny < M and (nx,ny) not in list and stemp not in visit:
-                    visit.add(stemp)
-                    q.append((temp,val + L[nx][ny]))
+##    a   -> 이거 떄문에 dfs포기하고 BFS풀이 했는데 새로운 발상
+# 일단 DFS로 푼다음에 ㅗ모양에 대해서만 다시 조사하는 식으로 풀이 발상
+# ㅗ모양만 인덱스로 풀든가 두개를 뽑은 상태에서 next가 아닌 now에 대해서 dfs돌리기
+def dfs(x, y, val, cnt):
+    global L, ans, N, M, visit, max_val, steps
+    if cnt == 4:
+        ans = max(ans, val)
+        return
+    if val + (4- cnt) * max_val < ans:
+        return
+    for dx, dy in steps:
+        nx, ny = x+dx, y + dy
+        if 0 <= nx < N and 0 <= ny < M and visit[nx][ny] == 0:
+            visit[nx][ny] = 1
+            if cnt == 2:
+                dfs(x, y, val+ L[nx][ny], cnt + 1)
+            dfs(nx, ny, val + L[nx][ny], cnt + 1)
+            visit[nx][ny] = 0
 
 
-N , M = map(int, input().split())
+N, M = map(int, input().split())
 L = [list(map(int, input().split())) for _ in range(N)]
-steps = [(1,0),(0,1),(-1,0),(0,-1)]
+max_val = max([max(l) for l in L])
+steps = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 ans = 0
-visit = set()
+visit = [[0] * M for _ in range(N)]
 for i in range(N):
     for j in range(M):
-        q = deque()
-        q.append(([(i,j)], L[i][j]))
-        visit.add((i,j))
-        bfs(i, j, L[i][j], q)
+        visit[i][j] = 1
+        dfs(i, j, L[i][j], 1)
+        visit[i][j] = 0
 print(ans)
