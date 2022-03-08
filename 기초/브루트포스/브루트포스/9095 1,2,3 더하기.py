@@ -1,9 +1,16 @@
-DP = [0]*12
-DP[0] = 1
-DP[1] = 1
-DP[2] = 2
-for i in range(3, 12):
-    DP[i] = DP[i-1] + DP[i-2] + DP[i-3]
+def dfs(val):
+    global n, ans
+    if val == n:
+        ans += 1
+        return
+    for i in range(1,4):
+        if val + i <= n:
+            dfs(val + i)
+    return
 for t in range(int(input())):
     n = int(input())
-    print(DP[n])
+    ans = 0
+    dfs(0)
+    print(ans)
+
+
