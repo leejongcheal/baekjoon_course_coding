@@ -1,9 +1,14 @@
-from itertools import permutations
 n = int(input())
-T = tuple(map(int, input().split()))
-com_L = list(permutations(range(1, n+1), n))
-index = com_L.index(T)
-if index == len(com_L) - 1:
-    print(-1)
-else:
-    print(" ".join(map(str, com_L[index + 1])))
+find = list(map(int, input().split()))
+res = [-1]
+if find != list(range(n - 1, -1, -1)):
+    for i in range(n - 2, -1, -1):
+        if find[i] < find[i + 1]:
+            for j in range(n - 1, i, -1):
+                if find[i] < find[j]:
+                    find[i], find[j] = find[j], find[i]
+                    res = find[:i + 1] + sorted(find[i + 1:])
+                    break
+            break
+print(" ".join(map(str, res)))
+
