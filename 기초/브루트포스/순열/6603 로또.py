@@ -1,9 +1,8 @@
-from itertools import combinations
-while 1:
-    L = list(map(int ,input().split()))
-    n, L = L[0], L[1:]
-    if n == 0:
+from itertools import *
+while True:
+    n = input().split()[1:]
+    if not n:
         break
-    for comb in combinations(L, 6):
-        print(" ".join(map(str, comb)))
+    for c in combinations(n,6):
+        print(" ".join(c))
     print()
