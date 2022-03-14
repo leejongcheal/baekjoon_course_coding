@@ -1,26 +1,22 @@
+import sys
 s = set()
 for _ in range(int(input())):
-    oper = input().split()
-    if len(oper) > 1:
+    oper = sys.stdin.readline().strip().split()
+    if len(oper) == 1:
+        if oper[0] == "all":
+            s = {i for i in range(1,21)}
+        elif oper[0] == "empty":
+            s = set()
+    else:
         oper, val = oper[0], int(oper[1])
         if oper == "add":
             s.add(val)
         elif oper == "remove":
-            if val in s:
-                s.remove(val)
+            s.discard(val)
         elif oper == "check":
-            if val in s:
-                print(1)
-            else:
-                print(0)
+            print(1 if val in s else 0)
         elif oper == "toggle":
             if val in s:
-                s.remove(val)
+                s.discard(val)
             else:
                 s.add(val)
-    # all, empty
-    else:
-        if oper[0] == "all":
-            s = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}
-        elif oper == "empty":
-            s = set()
