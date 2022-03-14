@@ -15,13 +15,12 @@ else:
         if x == goal:
             print(DP[x] - 1)
             break
-        if x - 1 > 0 and (DP[x-1] == 0): # or DP[x-1] > cnt + 1):
+        if x - 1 > 0 and (DP[x-1] == 0 or DP[x-1] > cnt + 1):
             DP[x - 1] = cnt + 1
             heapq.heappush(q,(cnt + 1, x - 1))
-        if x + 1 <= 100000 and (DP[x + 1] == 0) :# or DP[x+1] > cnt + 1):
+        if x + 1 <= 100000 and (DP[x + 1] == 0 or DP[x+1] > cnt + 1):
             DP[x + 1] = cnt + 1
             heapq.heappush(q,(cnt + 1, x + 1))
-        if x > 0 and x*2 <= 100000 and (DP[x*2] == 0):# or DP[x*2] > cnt):
+        if x > 0 and x*2 <= 100000 and (DP[x*2] == 0 or DP[x*2] > cnt):
             DP[x * 2] = cnt
             heapq.heappush(q,(cnt, x * 2))
-    # print(DP[:40])
