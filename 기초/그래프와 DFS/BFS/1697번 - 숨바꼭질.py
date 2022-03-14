@@ -1,7 +1,7 @@
 from collections import deque, defaultdict
 DP = defaultdict(int)
 x, goal = map(int,input().split())
-if x > goal:
+if x > goal :
     print(x - goal)
 else:
     q = deque()
