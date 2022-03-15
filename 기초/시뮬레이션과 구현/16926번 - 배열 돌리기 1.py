@@ -1,25 +1,30 @@
 def fill(Map, temp, N, M, x, y):
-    steps = [(1, 0),(0, 1),(-1, 0),(0, -1)]
-    flag = 1
-    direction = 0
-    while flag:
-        flag = 0
-        for i in range(2):
-            direction = (direction + i) % 4
-            dx, dy = steps[direction]
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < N and 0 <= ny < M and temp[nx][ny] == -1:
-                temp[nx][ny] = Map[x][y]
-                x, y = nx, ny
-                flag = 1
-                break
+    level = x
+    #밑으로
+    i, j = level, level
+    for i in range(level, N-1-level):
+        temp[i+1][j] = Map[i][j]
+    #오른쪽으로
+    i,j = N-1-level, level
+    for j in range(level, M-1-level):
+        temp[i][j+1] = Map[i][j]
+    #위로
+    i, j = N-1-level, M-1-level
+    for i in range(N-1-level,level, -1):
+        temp[i-1][j] = Map[i][j]
+    #왼쪽으로
+    i, j = level, M - 1 - level
+    for j in range(M-1-level,level, -1):
+        temp[i][j-1] = Map[i][j]
+    # print(str(i)+"시작한 결과")
+    # for t in temp:
+    #     print(t)
 
 
 def rotate(Map, N, M):
-    temp = [[-1]*M for _ in range(N)]
-    for i in range(N):
-        if i < M and temp[i][i] == -1:
-            fill(Map, temp, N, M, i, i)
+    temp = [[0]*M for _ in range(N)]
+    for i in range(min(N, M) // 2):
+        fill(Map, temp, N, M, i, i)
     return temp
 
 
