@@ -19,6 +19,7 @@ while q:
             if graph[nx][ny] == 0 and visit[nx][ny] > wall_cnt:
                 visit[nx][ny] = visit[x][y]
                 q.appendleft((wall_cnt, nx, ny))
-            if graph[nx][ny] == 1 and visit[nx][ny] > wall_cnt:
+            # 아 무슨 wall_cnt + 1 이 아닌 wall_cnt 넣었다고 메모리 초과뜨는 문제
+            elif graph[nx][ny] == 1 and visit[nx][ny] > wall_cnt + 1:
                 visit[nx][ny] = visit[x][y] + 1
                 q.append((wall_cnt + 1, nx, ny))
