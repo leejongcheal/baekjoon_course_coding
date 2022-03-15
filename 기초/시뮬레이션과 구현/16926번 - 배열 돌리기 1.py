@@ -1,4 +1,4 @@
-def fill(Map, temp, visit, N, M, x, y):
+def fill(Map, temp, N, M, x, y):
     steps = [(1, 0),(0, 1),(-1, 0),(0, -1)]
     flag = 1
     direction = 0
@@ -8,21 +8,18 @@ def fill(Map, temp, visit, N, M, x, y):
             direction = (direction + i) % 4
             dx, dy = steps[direction]
             nx, ny = x + dx, y + dy
-            if 0 <= nx < N and 0 <= ny < M and visit[nx][ny] == 0:
+            if 0 <= nx < N and 0 <= ny < M and temp[nx][ny] == -1:
                 temp[nx][ny] = Map[x][y]
-                visit[nx][ny] = 1
                 x, y = nx, ny
                 flag = 1
                 break
 
 
 def rotate(Map, N, M):
-    visit = [[0]*M for _ in range(N)]
-    temp = [[0]*M for _ in range(N)]
+    temp = [[-1]*M for _ in range(N)]
     for i in range(N):
-        for j in range(M):
-            if visit[i][j] == 0:
-                fill(Map, temp,visit,N, M, i, j)
+        if i < M and temp[i][i] == -1:
+            fill(Map, temp, N, M, i, i)
     return temp
 
 
