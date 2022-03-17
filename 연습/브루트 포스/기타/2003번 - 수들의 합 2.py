@@ -1,28 +1,13 @@
 N, M = map(int, input().split())
 L = list(map(int, input().split()))
-i = j = 0
-now = L[0]
 res = 0
-while 1:
-    # if i > j:
-    #     i == j
-    if now < M:
-        j += 1
-        if j >= N:
-            break
-        now += L[j]
-    elif now == M:
-        res += 1
-        now -= L[i]
-        i += 1
-        if i >= N:
-            break
-    elif now > M:
-        now -= L[i]
-        i += 1
-        if i >= N:
-            break
-    if i > j:
-        j = i
-        now = L[j]
+left = 0
+now = 0
+for right in range(N):
+    now += L[right]
+    while now >= M:
+        if now == M:
+            res += 1
+        now -= L[left]
+        left += 1
 print(res)
