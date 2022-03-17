@@ -1,32 +1,34 @@
 def cal():
-    global keys, dic, L
+    global keys, dic, L, dic_value
     res = 0
     for l in L:
         length = len(l) - 1
         val = 0
         for e in l:
-            val += dic[e]*(10 ** length)
+            decode_val = dic_value[dic[e]]
+            if decode_val == -1:
+                decode_val = 9
+            val += decode_val*(10 ** length)
             length -= 1
         res += val
     return res
 
-def dfs(cnt):
-    global res, total, dic, visit
-    if cnt == total:
-        print(dic)
+def dfs(dic_idx):
+    global total, res
+    if dic_idx == total:
         res = max(res, cal())
         return
-    for key in keys:
-        if dic[key] == -1:
-            for i in range(9, -1, -1):
-                if visit[i] == 0:
-                    visit[i] = 1
-                    dic[key] = i
-                    dfs(cnt + 1)
-                    dic[key] = -1
-                    visit[i] = 0
-
-
+    # 가지치기
+    else:
+        if res > cal():
+            return
+    for i in range(9,-1,-1):
+        if visit[i] == 0:
+            visit[i] = 1
+            dic_value[dic_idx] = i
+            dfs(dic_idx + 1)
+            dic_value[dic_idx] = -1
+            visit[i] = 0
 N = int(input())
 L = list(list(input()) for _ in range(N))
 keys = []
@@ -36,8 +38,9 @@ keys = set(keys)
 total = len(keys)
 dic = dict()
 res = 0
-for key in keys:
-    dic[key] = -1
+dic_value = [-1]*(total)
+for idx, key in enumerate(keys):
+    dic[key] = idx
 visit = [0]*10
 dfs(0)
 print(res)
