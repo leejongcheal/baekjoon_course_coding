@@ -7,7 +7,9 @@ steps = [(1, 0), (0, 1), (-1, 0), (0, -1)]
 # .: 빈 칸
 # #: 벽
 def bfs(x1, y1, x2, y2):
+    visit = set()
     q = deque()
+    visit.add((x1, y1, x2, y2))
     q.append((0, x1, y1, x2, y2))
     while q:
         cnt, x1, y1, x2, y2 = q.popleft()
@@ -26,10 +28,12 @@ def bfs(x1, y1, x2, y2):
                     nx1, ny1 = x1, y1
                 if L[nx2][ny2] == "#":
                     nx2, ny2 = x2, y2
-                q.append((cnt+1, nx1, ny1, nx2, ny2))
+                if (nx1, ny1, nx2, ny2) not in visit:
+                    q.append((cnt+1, nx1, ny1, nx2, ny2))
+                    visit.add((nx1, ny1, nx2, ny2))
             else:
                 continue
-    return "error"
+    return -1
 N, M = map(int, input().split())
 res = 0
 x1 = y1 = x2 = y2 = -1
