@@ -26,7 +26,7 @@ distance = [INF]*(N + 1)
 visited = [0]*(N + 1) # 1 사이클안생기는정점 2 사이클에 속하는 정점
 graph = defaultdict(list)
 for _ in range(N):
-    a, b = map(int, input().split())
+    a, b = map(int, sys.stdin.readline().split())
     graph[a].append(b)
     graph[b].append(a)
 # 사이클 부분 distance 0으로
