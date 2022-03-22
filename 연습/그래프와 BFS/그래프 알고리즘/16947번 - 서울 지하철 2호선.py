@@ -1,50 +1,50 @@
 from collections import deque
 import sys
 sys.setrecursionlimit(100000000)
-def dfs(now, traced):
+def dfs(now, cnt):
     global graph, visited, N
-    if visited[now] == 1:
-        # 사이클이 안생기는 정점으로 조사할 필요가 없는곳
-        return 1
-    if now in traced:
-        index = traced.index(now)
-        # print(now, traced)
-        if len(traced[index:]) >= 3:
-            for t in traced[index:]:
-                distance[t] = 0
-        return 0
-    traced.append(now)
-    for next in graph[now]:
-        dfs(next, traced)
-    traced.pop()
+    if visited[now]:
+        if cnt - distance[now] >= 3:
+            return now
+        else:
+            return -1
     visited[now] = 1
+    distance[now] = cnt
+    for next in graph[now]:
+        cycleStartNode = dfs(next, cnt + 1)
+        if cycleStartNode != -1:
+            visited[now] = 2
+            if now == cycleStartNode: return -1
+            else: return cycleStartNode
+    return -1
 
 # 순환이 무조건 하나만 나오는 입력값이 주어짐
 from collections import defaultdict
 INF = int(1e10)
 N = int(input())
 distance = [INF]*(N + 1)
-visited = [0]*(N + 1) # 1 사이클안생기는정점 2 사이클 생기는 정점
+visited = [0]*(N + 1) # 1 사이클안생기는정점 2 사이클에 속하는 정점
 graph = defaultdict(list)
 for _ in range(N):
     a, b = map(int, input().split())
     graph[a].append(b)
     graph[b].append(a)
 # 사이클 부분 distance 0으로
+dfs(1, 0)
+
+
+###
+q = deque()
 for i in range(1, N+1):
-    if visited[i] != 1:
-        dfs(i, [])
-no_cyle = deque()
-for i in range(1, N+1):
-    if distance[i] != 0:
-        no_cyle.append(i)
-while no_cyle:
-    now = no_cyle.popleft()
-    flag = 0
+    if visited[i] == 2:
+        distance[i] = 0
+        q.append(i)
+    else:
+        distance[i] = INF
+while q:
+    now = q.popleft()
     for next in graph[now]:
-        if distance[next] != INF:
-            distance[now] = min(distance[next] + 1, distance[now])
-            flag = 1
-    if not flag:
-        no_cyle.append(now)
+        if distance[next] == INF:
+            distance[next] = distance[now] + 1
+            q.append(next)
 print(*distance[1:])
