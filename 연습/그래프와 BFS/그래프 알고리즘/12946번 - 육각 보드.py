@@ -12,15 +12,16 @@ def check(x, y, val):
     return 1
 
 def dfs(x, y, index, val, cnt):
+    # print(index, cnt)
     # cnt는 그린거의 갯수, val 은 들어갈 값
     global steps, min_index, M, Map, N, visit
-    if cnt >= min_index:
+    if index >= min_index:
         return
     if cnt == M:
+        # print(1)
         min_index = min(min_index, index)
-        return cnt
+        return
     Map[x][y] = val
-    cnt += 1
     for dx, dy in steps:
         nx, ny = x + dx, y + dy
         if 0 <= nx < N and 0 <= ny < N and Map[nx][ny] == "X":
@@ -63,11 +64,12 @@ for x, y in location:
         for vx, vy in visit:
             visited[vx][vy] = 1
         # print(visit)
+        # print(M)
         min_index = 10**10
         cnt = 1
         dfs(x, y, 1, 0, cnt)
         res = min(min_index, res)
-if M:
+if location:
     print(res)
 else:
     print(0)
