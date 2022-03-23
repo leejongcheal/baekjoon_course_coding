@@ -1,6 +1,6 @@
 from collections import defaultdict, deque
-import sys
-sys.setrecursionlimit(100000000)
+
+
 def bfs(L):
     visit = defaultdict(int)
     q = deque()
@@ -24,7 +24,6 @@ def bfs(L):
     return 0
 
 
-steps = [(0, 1, 2),(0, 2, 1),(1, 2, 0)]
 L = list(map(int, input().split()))
 Sum = sum(L)
 if Sum%3 != 0:
