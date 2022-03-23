@@ -1,28 +1,37 @@
-from collections import defaultdict
+from collections import defaultdict, deque
 import sys
 sys.setrecursionlimit(100000000)
-def dfs(L):
-    # print(L)
-    if L[0] == L[1] == L[2]:
-        return 1
-    for a, b, c in steps:
-        A, B, C = L[a], L[b], L[c]
-        B -= A
-        A *= 2
-        temp = tuple(sorted([A, B , C]))
-        if visit[temp] == 0:
-            visit[temp] = 1
-            if dfs(list(temp)):
-                return 1
+def bfs(L):
+    visit = defaultdict(int)
+    q = deque()
+    visit[(L[0], L[2])] = 1
+    q.append((L[0], L[2]))
+    while q:
+        A, B = q.popleft()
+        C = Sum - (A + B)
+        if A == B == C:
+            return 1
+        for x, y in (A, B), (A, C), (B, C):
+            if x > y:
+                x, y = y, x
+            y -= x
+            x *= 2
+            X = min(x, y, Sum-(x + y))
+            Y = max(x, y, Sum-(x + y))
+            if visit[(X,Y)] == 0:
+                visit[(X, Y)] = 1
+                q.append((X, Y))
     return 0
 
 
 steps = [(0, 1, 2),(0, 2, 1),(1, 2, 0)]
 L = list(map(int, input().split()))
-L.sort()
-visit = defaultdict(int)
-visit[tuple(L)] = 1
-if dfs(L):
-    print(1)
-else:
+Sum = sum(L)
+if Sum%3 != 0:
     print(0)
+else:
+    L.sort()
+    if bfs(L):
+        print(1)
+    else:
+        print(0)
