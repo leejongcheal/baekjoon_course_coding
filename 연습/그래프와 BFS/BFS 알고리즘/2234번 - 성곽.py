@@ -9,10 +9,8 @@ def bfs(x, y, index):
     q.append((x, y))
     while q:
         x, y = q.popleft()
-        for i in range(4):
-            # 해당 방향이 뚫려 있다 -> 0값가짐
-            if Map[x][y][i] == 0:
-                dx, dy = steps[i]
+        for i, (dx, dy) in enumerate(steps):
+            if Map[x][y] & 2**i == 0:
                 nx, ny = x + dx, y + dy
                 if 0 <= nx < N and 0 <= ny < M and visit[nx][ny] == -1:
                     visit[nx][ny] = index
@@ -24,18 +22,7 @@ def bfs(x, y, index):
 steps = [(0 ,-1),(-1, 0),(0, 1),(1, 0)]
 M, N = map(int, input().split())
 Map = [list(map(int, input().split())) for _ in range(N)]
-# 원소값 [1,1,1,1] 서 북 동 남 순서를 뜻함
-for i in range(N):
-    for j in range(M):
-        bit = bin(Map[i][j])[2:]
-        temp = [0]*4
-        for b in range(len(bit)):
-            if bit[-1-b] == "1":
-                temp[b] = 1
-        Map[i][j] = temp
-
-
-visit = [[-1]*M for _ in range(N)] # 방번호겸 방문체크
+visit = [[-1]*M for _ in range(N)]
 room_index_size = []
 room_cnt = 0
 max_room = 0
@@ -57,4 +44,3 @@ for x in range(N):
 print(room_cnt)
 print(max_room)
 print(max_2room)
-
