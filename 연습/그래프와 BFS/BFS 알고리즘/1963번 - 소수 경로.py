@@ -19,23 +19,11 @@ for tc in range(int(input())):
         if now == target:
             res = cnt
             break
-        L = []
-        # L에 순서반대로 한자리씩 들어감
-        for i in range(4):
-            now, c = divmod(now, 10)
-            L.append(c)
-        # 한자리씩 바꾸는 케이스
-        for i in range(4):
-            for j in range(10):
-                if i == 3 and j == 0:
-                    continue
-                val = 0
-                for c in range(4):
-                    if c == i:
-                        val += j*10**c
-                    else:
-                        val += L[c]*10**c
-                if prime[val] == 0 and visit[val] == 0:
+        for k in [1, 10, 100, 1000]:
+            m_number = now - (now//k) % 10 * k
+            for i in range(10):
+                val = m_number + i*k
+                if prime[val] == 0 and visit[val] == 0 and val >= 1000:
                     visit[val] = 1
                     q.append((val, cnt + 1))
     if res == -1:
