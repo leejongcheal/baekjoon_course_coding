@@ -41,6 +41,7 @@ def winter():
             muck[i][j] += A[i][j]
 
 
+
 N, M, K = map(int, input().split())
 A = [list(map(int, input().split())) for _ in range(N)]
 Map = defaultdict(list)
