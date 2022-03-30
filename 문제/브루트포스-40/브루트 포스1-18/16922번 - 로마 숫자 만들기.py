@@ -1,2 +1,9 @@
-L =[4, 10, 20, 35, 56, 83, 116, 155, 198, 244, 292, 341, 390, 439, 488, 537, 586, 635, 684, 733]
-print(L[int(input()) - 1])
+N = int(input())
+res = set()
+for x in range(N + 1):
+    for y in range(N-x+1):
+        for z in range(N-x-y+1):
+            w = N - (x + y + z)
+            val = 1*x + 5*y + 10*z + w*50
+            res.add(val)
+print(len(res))
