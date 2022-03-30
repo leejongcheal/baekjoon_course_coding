@@ -1,20 +1,2 @@
-from copy import deepcopy
-def dfs(pre, now):
-    global res
-    if sum(now) == N:
-        val = 0
-        for i in range(4):
-            val += now[i]*roma[i]
-        res.add(val)
-        return
-    for i in range(pre, 4):
-        temp = deepcopy(now)
-        temp[i] += 1
-        dfs(i, temp)
-
-
-roma = [1, 5, 10, 50]
-N = int(input())
-res = set()
-dfs(0, [0,0,0,0])
-print(len(res))
+L =[4, 10, 20, 35, 56, 83, 116, 155, 198, 244, 292, 341, 390, 439, 488, 537, 586, 635, 684, 733]
+print(L[int(input()) - 1])
