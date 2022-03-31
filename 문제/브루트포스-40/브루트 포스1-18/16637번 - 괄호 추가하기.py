@@ -39,7 +39,7 @@ number = [L[i] for i in range(N) if i % 2 == 0]
 oper = [L[i] for i in range(N) if i % 2 == 1]
 M = len(number)
 visit = [0]*len(number)
-res = 0
+res = -(2**32)
 if N == 1:
     res = int(number[0])
 else:
