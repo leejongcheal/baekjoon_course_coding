@@ -1,3 +1,5 @@
+# 사실상 문제의도는 DP로 낸거같음.
+
 def dfs(x, y, shape):
     global res
     if res >= 1000000:
