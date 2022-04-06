@@ -1,36 +1,28 @@
-width_steps = [((0, 1, 0),(0, 1, 0), 0),((0,1, 0),(1, 1, 1), 2)]
-height_steps = [((1,0, 0),(1,0, 0), 1),((1,0, 0),(1,1,1), 2)]
-diagonal_steps = [((1,1 ,1),(0,1,0), 0),((1,1,1),(1,0,0), 1),((1,1,1),(1,1,1), 2)]
-def dfs(x1, y1, x2, y2, shape):
+def dfs(x, y, shape):
     global res
     if res >= 1000000:
         return
-    if x2 == N - 1 and y2 == N - 1:
+    if x == N - 1 and y == N - 1:
         res += 1
         return
-    if shape == 0:
-        now_steps = width_steps
-    # 세로
-    elif shape == 1:
-        now_steps = height_steps
-    # 대각선
-    else:
-        now_steps = diagonal_steps
-    for step1, step2, nshape in now_steps:
-        dx1, dy1, f1 = step1
-        dx2, dy2, f2 = step2
-        nx1, ny1 = x1 + dx1, y1 + dy1
-        nx2, ny2 = x2 + dx2, y2 + dy2
-        if 0 <= nx2 < N and 0 <= ny2 < N\
-            and Map[nx2][ny2] != 1:
-            if f2 and (Map[x2 + 1][y2] == 1 or Map[x2][y2 + 1] == 1):
-                continue
-            dfs(nx1, ny1, nx2, ny2, nshape)
-
-
+    # -> 이동
+    if shape == 0 or shape == 2:
+        nx, ny = x + 0, y + 1
+        if ny < N and Map[nx][ny] == 0:
+            dfs(nx, ny, 0)
+    # | 이동
+    if shape == 1 or shape == 2:
+        nx, ny = x + 1 , y
+        if nx < N and Map[nx][ny] == 0:
+            dfs(nx, ny, 1)
+    # \ 이동
+    nx, ny = x + 1, y + 1
+    if nx < N and ny < N and Map[nx][ny] == 0:
+        if Map[x+1][y] == 0 and Map[x][y + 1] == 0:
+            dfs(nx, ny, 2)
 N = int(input())
 Map = [list(map(int, input().split())) for _ in range(N)]
 res = 0
-dfs(0,0,0,1,0)
+dfs(0,1,0)
 print(res)
 
