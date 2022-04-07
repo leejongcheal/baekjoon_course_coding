@@ -35,8 +35,8 @@ def dfs(Map, x, y, cnt):
     for i in range(N):
         for j in range(N):
             # 이부분을 이해하자. 이거떄문에 시간문제걸림
-            if 10*i + j < 10*x + y and Map[i][j] == 1:
-                return
+            # if 10*i + j < 10*x + y and Map[i][j] == 1:
+            #     return
             if 10 * i + j >= 10 * x + y and Map[i][j] == 1:
                 t = 1
                 while t < 6:
@@ -52,6 +52,7 @@ def dfs(Map, x, y, cnt):
                         dfs(Map, i, j, cnt + 1)
                         fill(Map, i, j, tt, 1)
                         visit[tt] += 1
+                return
 
 
 INF = int(1e10)
