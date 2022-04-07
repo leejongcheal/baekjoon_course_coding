@@ -16,13 +16,14 @@ def check(Map):
 
 
 def dfs(Map, now, x, y):
-    global res, cnt, line_cnt
-    if res != -1:
+    global res, line_cnt
+    # 최솟값을 찾아야되는데 이미 2를 찾았으면 2,3조사가 아닌 1에 대해서만 조사하면됨.
+    if res <= now:
         return
     if check(Map):
-        res = now
+        res = min(res, now)
         return
-    if now == cnt:
+    if now >= 3:
         return
     for i in range(N):
         for j in range(M-1):
@@ -42,7 +43,11 @@ for i in range(line_cnt):
     a -= 1
     b -= 1
     Map[a][b] = Map[a][b+1] = i + 1
-cnt = 3
-res = -1
-dfs(Map, 0, 0, 0)
-print(res)
+INF = int(1e10)
+res = INF
+### 0,0 시작했는데 if i*10+j <= 10*x + y: 이부분 걸리는걸 생각못함..
+dfs(Map, 0, -1, -1)
+if res != INF:
+    print(res)
+else:
+    print(-1)
