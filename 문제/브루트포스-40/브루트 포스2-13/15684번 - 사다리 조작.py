@@ -19,10 +19,11 @@ def dfs(Map, now, x, y):
     global res, cnt, line_cnt
     if res != -1:
         return
+    if check(Map):
+        res = now
+        return
     if now == cnt:
-        if check(Map):
-            res = now
-            return
+        return
     for i in range(N):
         for j in range(M-1):
             if i*10+j <= 10*x + y:
@@ -41,11 +42,7 @@ for i in range(line_cnt):
     a -= 1
     b -= 1
     Map[a][b] = Map[a][b+1] = i + 1
-cnt = 0
+cnt = 3
 res = -1
-while cnt < 4:
-    if res != -1:
-        break
-    dfs(Map, 0, 0, 0)
-    cnt += 1
+dfs(Map, 0, 0, 0)
 print(res)
