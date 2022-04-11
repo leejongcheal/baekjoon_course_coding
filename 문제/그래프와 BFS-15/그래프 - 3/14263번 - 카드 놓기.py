@@ -31,53 +31,29 @@ indegree = defaultdict(int)
 graph = defaultdict(list)
 visit = []
 flag = 0
-for i in range(N):
-    for j in range(M):
-        if flag:
-            # 존재하지 않는 경우
-            break
-        if Map[i][j] != ".":
-            for dx, dy in steps:
-                ni, nj = i + dx, j + dy
-                if 0 <= ni < N and 0 <= nj < M and Map[ni][nj] not in [".", Map[i][j]] and [Map[i][j], Map[ni][nj]] not in visit:
-                    visit.append([Map[i][j], Map[ni][nj]])
-                    visit.append([Map[ni][nj], Map[i][j]])
-                    inject = groups[Map[i][j]] & groups[Map[ni][nj]]
-                    a = 0
-                    for x, y in inject:
-                        if a == 0 and Map[x][y] in [Map[i][j], Map[ni][nj]]:
-                            a = Map[x][y]
-                            if a != Map[i][j]:
-                                b = Map[i][j]
-                            else:
-                                b = Map[ni][nj]
-                        elif a != 0:
-                            if Map[x][y] == b:
-                                flag = 1
-                                break
-                    # 선후 관계 찾은경우
-                    if a != 0:
-                        if a != Map[i][j]:
-                            b = Map[i][j]
-                        else:
-                            b = Map[ni][nj]
-                        graph[b].append(a)
-                        indegree[a] += 1
+for val in groups.keys():
+    for x, y in groups[val]:
+        if Map[x][y] != val and Map[x][y] not in graph[val]:
+            graph[val].append(Map[x][y])
+            indegree[Map[x][y]] += 1
 
-if flag:
-    print(-1)
-else:
-    q = []
-    res = ""
-    for key in groups.keys():
-        if indegree[key] == 0:
-            heapq.heappush(q,key)
-    while q:
-        now = heapq.heappop(q)
-        res += now
-        for next in graph[now]:
-            indegree[next] -= 1
-            if indegree[next] == 0:
-                heapq.heappush(q, next)
-    print(res)
+q = []
+res = ""
+for key in groups.keys():
+    if indegree[key] == 0:
+        heapq.heappush(q,key)
+while q:
+    now = heapq.heappop(q)
+    res += now
+    for next in graph[now]:
+        indegree[next] -= 1
+        if indegree[next] == 0:
+            heapq.heappush(q, next)
+for key in groups.keys():
+    if key not in res:
+        res = - 1
+        break
+if res != -1 and len(res) != len(groups):
+    res = -1
+print(res)
 
