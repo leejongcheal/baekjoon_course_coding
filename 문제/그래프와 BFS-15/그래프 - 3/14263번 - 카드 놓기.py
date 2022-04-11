@@ -45,15 +45,16 @@ for i in range(N):
                     inject = groups[Map[i][j]] & groups[Map[ni][nj]]
                     a = 0
                     for x, y in inject:
-                        if a == 0:
+                        if a == 0 and Map[x][y] in [Map[i][j], Map[ni][nj]]:
                             a = Map[x][y]
                             if a != Map[i][j]:
                                 b = Map[i][j]
                             else:
                                 b = Map[ni][nj]
-                        if Map[x][y] == b:
-                            flag = 1
-                            break
+                        elif a != 0:
+                            if Map[x][y] == b:
+                                flag = 1
+                                break
                     # 선후 관계 찾은경우
                     if a != 0:
                         if a != Map[i][j]:
