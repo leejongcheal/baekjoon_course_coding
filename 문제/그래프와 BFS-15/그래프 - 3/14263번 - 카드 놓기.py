@@ -56,4 +56,3 @@ for key in groups.keys():
 if res != -1 and len(res) != len(groups):
     res = -1
 print(res)
-
