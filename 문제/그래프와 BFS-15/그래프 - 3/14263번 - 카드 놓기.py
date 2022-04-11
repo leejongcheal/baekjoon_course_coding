@@ -62,9 +62,7 @@ for i in range(N):
                             b = Map[ni][nj]
                         graph[b].append(a)
                         indegree[a] += 1
-# print(graph)
-# print(indegree)
-# print(flag)
+
 if flag:
     print(-1)
 else:
