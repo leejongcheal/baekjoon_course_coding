@@ -21,54 +21,69 @@ visit = defaultdict(int) # 번호 좌표 타입 = dist
 visit[(1, sx, sy, 0)] = 0
 visit[(1, sx, sy, 1)] = 0
 visit[(1, sx, sy, 2)] = 0
-res = int(1e10)
+temp1 = []
+temp2 = []
 while q:
-    num, x, y, type, dist = q.popleft()
-    if Map[x][y] == num + 1:
-        num += 1
-        if num == N*N:
-            res = min(dist, res)
-            continue
-        visit[(num, x, y, type)] = dist
-    # 나이트 이동 0
-    if type == 0:
-        nd = dist
-    else:
-        nd = dist + 1
-    for dx, dy in knight:
-        nx, ny = x + dx, y + dy
-        if 0 <= nx < N and 0 <= ny < N:
-            if visit[(num, nx, ny, 0)] == 0 or visit[(num, nx, ny, 0)] > nd + 1:
-                visit[(num, nx, ny, 0)] = nd + 1
-                q.append((num, nx, ny, 0, nd + 1))
-    # 비숍 이동 1
-    if type == 1:
-        nd = dist
-    else:
-        nd = dist + 1
-    for dx, dy in bishop:
-        nx, ny = x + dx, y + dy
-        while 0 <= nx < N and 0 <= ny < N:
-            if visit[(num, nx, ny, 1)] == 0 or visit[(num, nx, ny, 1)] > nd + 1:
-                visit[(num, nx, ny, 1)] = nd + 1
-                q.append((num, nx, ny, 1, nd + 1))
-            nx += dx
-            ny += dy
-    # 룩이동  2
-    if type == 2:
-        nd = dist
-    else:
-        nd = dist + 1
-    for dx, dy in lock:
-        nx, ny = x + dx, y + dy
-        while 0 <= nx < N and 0 <= ny < N:
-            if visit[(num, nx, ny, 2)] == 0 or visit[(num, nx, ny, 2)] > nd + 1:
-                visit[(num, nx, ny, 2)] = nd + 1
-                q.append((num, nx, ny, 2, nd + 1))
-            nx += dx
-            ny += dy
-if res >= int(1e10):
-    print(-1)
-else:
-    print(res)
+    if res != -1:
+        break
+    temp2 = []
+    while q:
+        num, x, y, type, dist = q.pop()
+        if Map[x][y] == num + 1:
+            num += 1
+            if num == N*N:
+                res = dist
+                break
+            visit[(num, x, y, type)] = dist
+        # 나이트 이동 0
+        if type == 0:
+            nd = dist
+        else:
+            nd = dist + 1
+        for dx, dy in knight:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < N and 0 <= ny < N:
+                if visit[(num, nx, ny, 0)] == 0 or visit[(num, nx, ny, 0)] > nd + 1:
+                    visit[(num, nx, ny, 0)] = nd + 1
+                    if nd == dist:
+                        temp1.append((num, nx, ny, 0, nd + 1))
+                    else:
+                        temp2.append((num, nx, ny, 0, nd + 1))
+        # 비숍 이동 1
+        if type == 1:
+            nd = dist
+        else:
+            nd = dist + 1
+        for dx, dy in bishop:
+            nx, ny = x + dx, y + dy
+            while 0 <= nx < N and 0 <= ny < N:
+                if visit[(num, nx, ny, 1)] == 0 or visit[(num, nx, ny, 1)] > nd + 1:
+                    visit[(num, nx, ny, 1)] = nd + 1
+                    if nd == dist:
+                        temp1.append((num, nx, ny, 1, nd + 1))
+                    else:
+                        temp2.append((num, nx, ny, 1, nd + 1))
+                nx += dx
+                ny += dy
+        # 룩이동  2
+        if type == 2:
+            nd = dist
+        else:
+            nd = dist + 1
+        for dx, dy in lock:
+            nx, ny = x + dx, y + dy
+            while 0 <= nx < N and 0 <= ny < N:
+                if visit[(num, nx, ny, 2)] == 0 or visit[(num, nx, ny, 2)] > nd + 1:
+                    visit[(num, nx, ny, 2)] = nd + 1
+                    if nd == dist:
+                        temp1.append((num, nx, ny, 2, nd + 1))
+                    else:
+                        temp2.append((num, nx, ny, 2, nd + 1))
+                nx += dx
+                ny += dy
+    q = temp1
+    temp1 = temp2
+    if res != -1:
+        break
+print(res)
 
