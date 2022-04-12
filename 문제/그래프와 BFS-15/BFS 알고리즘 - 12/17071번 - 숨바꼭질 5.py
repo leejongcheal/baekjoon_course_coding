@@ -1,6 +1,6 @@
 N, K = map(int, input().split())
 q = []
-visit = set()# t, 위치
+visit = set()# t%2, 위치
 q.append((N))
 t = 1
 res = -1
@@ -25,8 +25,8 @@ while q:
             if nx == K:
                 res = t
                 break
-            elif 0 <= nx <= 500000 and (t, nx) not in visit:
-                visit.add((t, nx))
+            elif 0 <= nx <= 500000 and (t%2, nx) not in visit:
+                visit.add((t%2, nx))
                 temp.append(nx)
     t += 1
     q = temp
