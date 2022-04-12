@@ -1,26 +1,26 @@
-from collections import deque
 N, K = map(int, input().split())
 L = [list(input()) for _ in range(2)]
-q = deque()
-q.append((0, 0, 0))
+q = []
+q.append((0, 0))
 res = 0
+t = 0
+# 아 중복방문을 생각못함 ...
 while q:
-    t, x, y = q.popleft()
-    if y >= N:
-        res = 1
+    temp = []
+    L[0][t] = L[1][t] = 0
+    t += 1
+    while q:
+        if res:
+            break
+        x, y = q.pop()
+        for nx, ny in [(x, y - 1),(x, y + 1),(x^1, y + K)]:
+            if 0 <= ny < N and L[nx][ny] == "1":
+                L[nx][ny] = 0 # 방문처리해서 중복방문 못하게
+                temp.append((nx, ny))
+            elif ny >= N:
+                res = 1
+                break
+    if res:
         break
-    if 0 <= y - 1 < N and y - 1 > t and L[x][y-1] == "1":
-        q.append((t+1, x, y-1))
-    if y + 1 >= N:
-        res = 1
-        break
-    elif 0 <= y + 1 < N and y + 1 > t and L[x][y+1] == "1":
-        q.append((t+1, x ,y+1))
-    if y + K >= N:
-        res = 1
-        break
-    elif 0 <= y + K < N and y + K > t and L[x^1][y+K] == "1":
-        q.append((t+1, x^1, y + K))
+    q = temp
 print(res)
-
-
