@@ -24,8 +24,6 @@ visit[(1, sx, sy, 2)] = 0
 temp1 = []
 temp2 = []
 while q:
-    if res != -1:
-        break
     temp2 = []
     while q:
         num, x, y, type, dist = q.pop()
