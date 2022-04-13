@@ -19,7 +19,7 @@ def BFS(num: int):
                 q.append((nx, ny, now_dist + 1))
                 next_pos.add((nx, ny))
                 flag = 1
-    pos[num] |= next_pos
+    pos[num] = next_pos
     return flag
 
 
@@ -39,5 +39,9 @@ while remember:
         if BFS(i):
             temp.append(i)
     remember = temp
-for i in range(1, P + 1):
-    print(len(pos[i]), end=" ")
+cnt = [0]*P
+for i in range(N):
+    for j in range(M):
+        if Map[i][j] not in [".", "#"]:
+            cnt[int(Map[i][j]) - 1] += 1
+print(*cnt)
