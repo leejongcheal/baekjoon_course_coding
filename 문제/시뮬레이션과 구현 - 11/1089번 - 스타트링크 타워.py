@@ -47,7 +47,12 @@ for i in range(N):
 if [] in N_able:
     print(-1)
 else:
-    res_sum = 0
-    res_cnt = 0
-    dfs(0, 0)
-    print(res_sum / res_cnt)
+    res = 0
+    total = 1
+    for i in range(N):
+        total *= len(N_able[i])
+    for i in range(N):
+        res += sum(N_able[i])*(total // len(N_able[i]))*(10**(N-1-i))
+        # res += sum(N_able[i])*cnt*(10**(N-1-i))
+        # cnt *= len(N_able)
+    print(res / total)
