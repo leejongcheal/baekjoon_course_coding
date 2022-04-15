@@ -44,6 +44,12 @@ for i in range(4):
     if flag:
         continue
     bitmask.append(255)
+networt = []
+for i in range(4):
+    new = bitmask[i]
+    for add in addrs:
+        new &= add[i]
+    networt.append(new)
 bitmask = ".".join(map(str, bitmask))
 networt = ".".join(map(str, networt))
 print(networt)
