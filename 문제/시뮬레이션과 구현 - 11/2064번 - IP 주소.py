@@ -14,14 +14,16 @@ def find(idx):
                 break
         if flag == 1:
             break
-    res = 2^(8-start) - 1
+    start = 8 - start
+    res = (1<<start) - 1
     return 255 - res
-bin
+
+
 N = int(input())
 networt = []
 bitmask = []
 addrs = [list(map(int, input().split("."))) for _ in range(N)]
-print(addrs)
+flag = 0
 for i in range(4):
     new = 255
     for add in addrs:
