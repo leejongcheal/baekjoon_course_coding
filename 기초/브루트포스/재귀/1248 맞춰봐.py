@@ -30,7 +30,7 @@ def dfs(q):
         if check(temp):
             dfs(temp)
     elif L[next][next] == "+":
-        for i in range(1, 10):
+        for i in range(1, 11):
             # if i not in q:
             temp = q + [i]
             if check(temp):
