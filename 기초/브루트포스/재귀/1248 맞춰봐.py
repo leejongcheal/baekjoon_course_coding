@@ -2,9 +2,11 @@ from collections import defaultdict
 def check(temp):
     global n, L
     cnt = len(temp)
+    val = 0
     for i in range(cnt):
-        for j in range(cnt - i):
-            val = sum(temp[i:i+j+1])
+        val = temp[i]
+        for j in range(i+1, cnt):
+            val += temp[j]
             if L[i][j] == "+" and val <= 0:
                 return 0
             elif L[i][j] == "0" and val != 0:
@@ -16,55 +18,53 @@ def check(temp):
 
 
 def dfs(q):
+    global ans
     if len(q) == n:
-        return q
+        ans = q
+        return
+    if ans:
+        return
     next = len(q)
-    ans = 0
-    if L[next][0] == "0": #and 0 not in q:
+    if L[next][next] == "0": #and 0 not in q:
         temp = q + [0]
         if check(temp):
-            ans = dfs(q + [0])
-    elif L[next][0] == "+":
+            dfs(temp)
+    elif L[next][next] == "+":
         for i in range(1, 10):
             # if i not in q:
             temp = q + [i]
             if check(temp):
-                ans = dfs(temp)
+                dfs(temp)
                 if ans:
-                    break
+                    return
     else:
         for i in range(-10, 0):
             # if i not in q:
             temp = q + [i]
             if check(temp):
-                ans = dfs(temp)
+                dfs(temp)
                 if ans:
-                    break
-    return ans
+                    return
+    return
 
 
 n = int(input())
 s = input()
-L = defaultdict(list)
+L = [[-1]*n for _ in range(n)]
 index = 0
 ans = []
 for i in range(n):
-    for j in range(n - i):
-        L[i].append(s[index])
+    for j in range(n):
+        if j < i:
+            continue
+        L[i][j] = s[index]
         index += 1
-visit = [0]*21
 if L[0][0] == '0':
-    ans = dfs([0])
+    dfs([0])
 elif L[0][0] == "+":
     for i in range(1, 11):
-        ans = dfs([i])
-        if ans:
-            break
+        dfs([i])
 else:
     for i in range(-10, 0):
-        ans = dfs([i])
-        if ans:
-            break
-# print(ans)
-# print(L)
+        dfs([i])
 print(" ".join(map(str, ans)))
