@@ -1,38 +1,33 @@
-def dfs(x, y, val_sum, cnt):
-    global steps, ans, max_val
-    if cnt == k:
-        ans = max(ans, val_sum)
-    if val_sum + max_val * (k - cnt) < ans:
+def dfs(num,tracked,val):
+    global res
+    if num == K:
+        res = max(res, val)
         return
-    for i in range(n):
-        for j in range(m):
-            if (x, y) < (i, j) and visit_check(i, j):
-                visit.append((i, j))
-                dfs(i, j, val_sum + L[i][j], cnt + 1)
-                visit.remove((i, j))
+    if val + (K - num)*max_val < res:
+        return
+    x = y = -1
+    if tracked:
+        x, y = tracked[-1]
+    for i in range(N):
+        for j in range(M):
+            # if i > x or (i == x and j > y):
+            if (i, j) > (x, y) and check(i, j, tracked):
+                dfs(num + 1, tracked + [(i,j)], val + Map[i][j])
 
-
-def visit_check(x, y):
-    global steps, visit, n , m
-    if (x, y) in visit:
+def check(i, j, tracked):
+    if (i, j) in tracked:
         return 0
-    for i, j in visit:
+    for x, y in tracked:
         for dx, dy in steps:
-            if i + dx == x and j + dy == y:
+            nx, ny = x + dx, y + dy
+            if nx == i and ny == j:
                 return 0
     return 1
-
-
-# ans = 0
-# 정답이 음수의 값이 나오는 경우를 상정하지 못함 ㅋㅋ
-ans = -int(1e10)
-steps = [(1,0),(0,1),(-1,0),(0,-1)]
-n, m, k = map(int, input().split())
-L = [list(map(int, input().split())) for _ in range(n)]
-max_val = max([max(x) for x in L])
-visit = []
-for i in range(n):
-    for j in range(m):
-        visit = [(i,j)]
-        dfs(i, j, L[i][j], 1)
-print(ans)
+steps = [(1, 0),(-1, 0),(0, 1),(0, -1)]
+INF = -(1e10)
+N, M, K = map(int, input().split())
+Map = [list(map(int, input().split())) for _ in range(N)]
+max_val = max([max(x) for x in Map])
+res = INF
+dfs(0,[],0)
+print(res)
