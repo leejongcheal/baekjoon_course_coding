@@ -1,4 +1,3 @@
-from copy import deepcopy
 from collections import deque
 steps = [(1, 0),(-1, 0),(0, 1),(0, -1)]
 def rotate(x, y, L):
@@ -10,7 +9,7 @@ N = 2 ** N
 Map = [list(map(int, input().split())) for _ in range(N)]
 L_list = list(map(int, input().split()))
 for L in L_list:
-    temp = deepcopy(Map)
+    temp = [[0]*N for _ in range(N)]
     x, y = 0, 0
     rotate(x, y, L)
     while x < N:
@@ -22,8 +21,9 @@ for L in L_list:
             y = 0
             if x < N:
                 rotate(x, y, L)
+
     # 확인 temp에 대해서
-    Map = deepcopy(temp)
+    Map = [x[::] for x in temp]
     for i in range(N):
         for j in range(N):
             if Map[i][j] == 0:
