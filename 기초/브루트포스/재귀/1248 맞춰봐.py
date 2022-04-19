@@ -4,15 +4,17 @@ def check(temp):
     cnt = len(temp)
     val = 0
     for i in range(cnt):
-        val = temp[i]
-        for j in range(i+1, cnt):
+        val = 0
+        for j in range(i, cnt):
             val += temp[j]
-            if L[i][j] == "+" and val <= 0:
-                return 0
-            elif L[i][j] == "0" and val != 0:
-                return 0
-            elif L[i][j] == "-" and val >= 0:
-                return 0
+        if val > 10 or val < - 10:
+            return 0
+        if L[i][cnt-1] == "+" and val <= 0:
+            return 0
+        elif L[i][cnt - 1] == "0" and val != 0:
+            return 0
+        elif L[i][cnt - 1] == "-" and val >= 0:
+            return 0
     return 1
 
 
@@ -38,9 +40,9 @@ def dfs(q):
                 if ans:
                     return
     else:
-        for i in range(-10, 0):
+        for i in range(1, 11):
             # if i not in q:
-            temp = q + [i]
+            temp = q + [-i]
             if check(temp):
                 dfs(temp)
                 if ans:
@@ -65,6 +67,6 @@ elif L[0][0] == "+":
     for i in range(1, 11):
         dfs([i])
 else:
-    for i in range(-10, 0):
-        dfs([i])
+    for i in range(1, 11):
+        dfs([-i])
 print(" ".join(map(str, ans)))
