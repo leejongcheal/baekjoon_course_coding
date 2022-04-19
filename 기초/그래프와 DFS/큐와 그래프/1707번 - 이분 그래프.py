@@ -1,30 +1,33 @@
 from collections import deque, defaultdict
-for t in range(int(input())):
-    N, M = map(int, input().split())
+def bfs(now):
+    q = deque()
+    visit[i] = 1
+    q.append(now)
+    while q:
+        now = q.popleft()
+        for next in graph[now]:
+            if visit[next] == visit[now]:
+                return 1
+            elif visit[next] == 0:
+                visit[next] = visit[now]%2 + 1
+                q.append(next)
+    return 0
+
+
+for tc in range(int(input())):
+    V, E = map(int, input().split())
     graph = defaultdict(list)
-    for _ in range(M):
+    visit = [0]*(V + 1)
+    for _ in range(E):
         a, b = map(int, input().split())
         graph[a].append(b)
         graph[b].append(a)
-    visit = [-1]*(N + 1)
     flag = 0
-    for i in range(1, N + 1):
+    for i in range(1, V + 1):
+        if visit[i] == 0:
+            flag = bfs(i)
         if flag:
             break
-        if visit[i] == -1:
-            q = deque()
-            q.append((i, 0))
-            while q:
-                now, toggle = q.popleft()
-                for next in graph[now]:
-                    if visit[next] == -1:
-                        q.append((next, 1^toggle))
-                        visit[next] = 1^toggle
-                    elif visit[next] == toggle:
-                        flag = 1
-                        break
-                if flag:
-                    break
     if flag:
         print("NO")
     else:
