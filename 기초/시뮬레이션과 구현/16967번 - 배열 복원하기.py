@@ -18,6 +18,8 @@ while cnt:
         for j in range(M+Y):
             if check_A(i, j) and not check_B(i, j):
                 A[i][j] = B[i][j]
+            elif not check_A(i, j) and check_B(i, j):
+                A[i-X][j-Y] = B[i][j]
             elif check_A(i,j) and check_B(i, j):
                 if A[i-X][j-Y] != "#":
                     A[i][j] = B[i][j] - A[i-X][j-Y]
