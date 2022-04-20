@@ -1,18 +1,28 @@
-H, W, X, Y = map(int, input().split())
-Map = [list(map(int,input().split())) for _ in range(H+X)]
-temp = [[-1]*W for _ in range(H)]
-for i in range(H+X):
-    for j in range(W+Y):
-        if 0 <= i < X and 0 <= i < H and 0 <= j < W:
-            temp[i][j] = Map[i][j]
-        elif H <= i and 0 <= i - X < H and 0 <= j - Y < W:
-            temp[i-X][j - Y] = Map[i][j]
-        elif X <= i < H and 0 <= j < Y:
-            temp[i][j] = Map[i][j]
-        elif X <= i < H and W <= j < W + Y:
-            temp[i - X][j - Y] = Map[i][j]
-        elif X <= i < H and Y <= j < W:
-            temp[i][j] = Map[i][j] - temp[i-X][j-Y]
-for t in temp:
-    print(" ".join(map(str, t)))
+def check_A(i, j):
+    if 0 <= i < N and 0 <= j < M:
+        return 1
+    else:
+        return 0
+def check_B(i, j):
+    if 0 +X <= i < N + X and 0 + Y <= j < M + Y:
+        return 1
+    else:
+        return 0
 
+N, M, X, Y = map(int, input().split())
+A = [["#"]*M for _ in range(N)]
+B = [list(map(int, input().split())) for _ in range(N+X)]
+cnt = sum([a.count("#") for a in A])
+while cnt:
+    for i in range(N+X):
+        for j in range(M+Y):
+            if check_A(i, j) and not check_B(i, j):
+                A[i][j] = B[i][j]
+            elif check_A(i,j) and check_B(i, j):
+                if A[i-X][j-Y] != "#":
+                    A[i][j] = B[i][j] - A[i-X][j-Y]
+                elif A[i][j] != "#":
+                    A[i-X][j-Y] = B[i][j] - A[i][j]
+    cnt = sum([a.count("#") for a in A])
+for a in A:
+    print(*a)
