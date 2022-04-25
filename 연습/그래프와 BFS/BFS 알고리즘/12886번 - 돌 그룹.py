@@ -1,35 +1,29 @@
-from collections import defaultdict, deque
-
-def bfs(L):
-    visit = defaultdict(int)
-    q = deque()
-    visit[(L[0], L[1], L[2])] = 1
-    q.append((L[0], L[1], L[2]))
-    while q:
-        A, B, C = q.popleft()
-        if A == B == C:
-            return 1
-        for x, y in (A, B), (A, C), (B, C):
-            if x > y:
-                x, y = y, x
-            y -= x
-            x *= 2
-            z = Sum - (x + y)
-            temp = tuple(sorted([x, y, z]))
-            if visit[temp] == 0:
-                visit[temp] = 1
-                q.append(temp)
-    return 0
-
-
-steps = [(0, 1, 2),(0, 2, 1),(1, 2, 0)]
-L = list(map(int, input().split()))
-Sum = sum(L)
-if Sum%3 != 0:
-    print(0)
+from collections import deque
+A, B, C = map(int, input().split())
+A, B, C = sorted((A,B,C))
+total = A + B + C
+if total % 3 != 0:
+    res = 0
 else:
-    L.sort()
-    if bfs(L):
-        print(1)
-    else:
-        print(0)
+    visit = set()
+    visit.add((A,B,C))
+    q = deque()
+    q.append((A,B))
+    q.append((B,C))
+    q.append((A,C))
+    res = 0
+    while q:
+        a, b = q.popleft()
+        c = total - (a + b)
+        # print(a, b, c ,a+b+c)
+        if a == b == c:
+            res = 1
+            break
+        a, b = a + a, b - a
+        if 1 <= a and 1 <= b and 1 <= c:
+            t = tuple(sorted((a,b,c)))
+            if t not in visit:
+                visit.add(t)
+                for a, b in [(t[0], t[1]), (t[1], t[2]), (t[0], t[2])]:
+                    q.append((a, b))
+print(res)
