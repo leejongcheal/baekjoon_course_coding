@@ -1,39 +1,31 @@
-from collections import deque, defaultdict
-x, target = map(int, input().split())
-if x == target:
-    print(0)
-elif target == 0:
+from collections import defaultdict,deque
+a, b = map(int, input().split())
+visit = defaultdict(int)
+if b == 0:
     print("-")
+elif a == b:
+    print(0)
 else:
-    q = deque()
-    visit = defaultdict(int)
-    q.append((x, ""))
-    visit[x] = 1
     res = -1
+    q = deque()
+    q.append((a, ""))
+    visit[a] = 1
     while q:
-        now, traced = q.popleft()
-        if now == target:
+        x, traced = q.popleft()
+        if x == b:
             res = traced
             break
-        elif now > target:
-            next = 1
-            if visit[next] == 0:
-                visit[next] = 1
-                q.append((next, traced + "/"))
+        if x > b:
+            if visit[1] == 0:
+                visit[1] = 1
+                q.append((1, traced+"/"))
         else:
-            next = now*now
-            if visit[next] == 0:
-                visit[next] = 1
-                q.append((next, traced + "*"))
-            next = now + now
-            if visit[next] == 0:
-                visit[next] = 1
-                q.append((next, traced + "+"))
-            next = 1
-            if visit[next] == 0:
-                visit[next] = 1
-                q.append((next, traced + "/"))
-    if res != -1:
-        print(res)
-    else:
+            for oper in ["*", "+", "/"]:
+                next = eval(str(x) + oper + str(x))
+                if visit[next] == 0:
+                    visit[next] = 1
+                    q.append((next, traced + oper))
+    if res == -1:
         print(-1)
+    else:
+        print("".join(res))
