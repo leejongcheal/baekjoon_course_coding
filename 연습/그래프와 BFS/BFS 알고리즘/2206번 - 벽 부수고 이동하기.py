@@ -1,27 +1,31 @@
-from collections import deque, defaultdict
-steps = [(1, 0),(-1, 0),(0, 1),(0, -1)]
+from collections import deque
+
+steps = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 N, M = map(int, input().split())
-Map = [list(input()) for _ in range(N)]
+visit = [[[0] * M for __ in range(N)] for _ in range(2)]
+graph = []
+for _ in range(N):
+    graph.append(list(map(int, list(input()))))
 q = deque()
-visit = set()
-visit.add((0,0,0))
-q.append((0,0,0, 1))
+# x y wall dis
+q.append((0, 0, 0, 1))
+visit[0][0][0] = 1
 res = -1
 while q:
-    x, y, cracked, dist = q.popleft()
+    x, y, wall, dis = q.popleft()
     if x == N - 1 and y == M - 1:
-        res = dist
+        res = dis
         break
+
     for dx, dy in steps:
         nx, ny = x + dx, y + dy
         if 0 <= nx < N and 0 <= ny < M:
-            if Map[nx][ny] == "0" and (nx, ny, cracked) not in visit:
-                visit.add((nx, ny, cracked))
-                q.append((nx, ny, cracked, dist + 1))
-            elif Map[nx][ny] == "1" and cracked == 0:
+            if graph[nx][ny] == 0 and visit[wall][nx][ny] == 0:
+                q.append((nx, ny, wall, dis + 1))
+                visit[wall][nx][ny] = 1
+            elif graph[nx][ny] == 1 and wall == 0:
                 nnx, nny = nx + dx, ny + dy
-                if 0 <= nnx < N and 0 <= nny < M and Map[nnx][nny] == "0" and \
-                        (nnx, nny, cracked + 1) not in visit:
-                    visit.add((nnx,nny, cracked+1))
-                    q.append((nnx, nny, cracked + 1, dist + 2))
+                if 0 <= nnx < N and 0 <= nny < M and visit[1][nnx][nny] == 0 and graph[nnx][nny] == 0:
+                    q.append((nnx, nny, wall + 1, dis + 2))
+                    visit[1][nnx][nny] = 1
 print(res)
