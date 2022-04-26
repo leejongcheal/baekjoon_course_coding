@@ -1,94 +1,71 @@
-from collections import defaultdict
-from copy import deepcopy
-# 가능하면 1 아니면 0
-def check(x, y, val):
-    if row[x][val]:
-        return 0
-    if col[y][val]:
-        return 0
-    if sqare[x//3*3+y//3][val]:
-        return 0
-    return 1
-
-
-def dfs(cnt): # 조사할 i, j가 주어짐
-    global res
-    if res:
-        return
-    if cnt == E_cnt:
-        for m in Map:
-            print(*m)
-        res = 1
-        return
-    x, y = E[cnt]
-    if Map[x][y]:
-        dfs(cnt + 1)
-        return
-    else:
-        for i in range(9):
-            for j in range(9):
-                if i == j or visit[i][j]:
-                    continue
-                for dx, dy in steps:
-                    nx, ny = x + dx, y + dy
-                    if 0 <= nx < 9 and 0 <= ny < 9 and Map[nx][ny] == 0:
-                        if check(x, y, i) and check(nx, ny, j):
-                            Map[x][y], Map[nx][ny] = i + 1, j + 1
-                            row[x][i] = row[nx][j] = 1
-                            col[y][i] = row[ny][j] = 1
-                            sqare[x//3*3 + y//3][i], sqare[nx//3*3 + ny//3][j] = 1, 1
-                            visit[i][j] = visit[j][i] = 1
-                            dfs(cnt + 1)
-                            if res:
-                                return
-                            Map[x][y], Map[nx][ny] = 0, 0
-                            row[x][i] = row[nx][j] = 0
-                            col[y][i] = row[ny][j] = 0
-                            sqare[x // 3 * 3 + y // 3][i], sqare[nx // 3 * 3 + ny // 3][j] = 0, 0
-                            visit[i][j] = visit[j][i] = 0
-    return
-
-tc = 1
-INF = int(1e10)
-steps = [(0, 1),(1 ,0)]
-while 1:
-    N = int(input())
-    if N == 0:
-        break
-    res = 0
-    Map = [[0]*9 for _ in range(9)]
-    row = [[0]*9 for _ in range(9)]
-    col = [[0]*9 for _ in range(9)]
-    sqare = [[0]*9 for _ in range(9)]
-    visit = [[0]*9 for _ in range(9)]
-    E = []
-    for _ in range(N):
-        a, pos_a, b, pos_b = input().split()
-        a, b = int(a), int(b)
-        pos_a = [ord(pos_a[0]) - 65, int(pos_a[1]) - 1]
-        pos_b = [ord(pos_b[0]) - 65, int(pos_b[1]) - 1]
-        Map[pos_a[0]][pos_a[1]] = a
-        row[pos_a[0]][a-1] = 1
-        col[pos_a[1]][a-1] = 1
-        sqare[pos_a[0]//3 * 3 + pos_a[1]//3][a - 1] = 1
-        Map[pos_b[0]][pos_b[1]] = b
-        row[pos_b[0]][b - 1] = 1
-        col[pos_b[1]][b - 1] = 1
-        sqare[pos_b[0] // 3 * 3 + pos_b[1] // 3][b - 1] = 1
-        visit[a-1][b-1] = visit[b-1][a-1] = 1
-    num = list(input().split())
-    for i in range(9):
-        pos = [ord(num[i][0]) - 65, int(num[i][1]) - 1]
-        Map[pos[0]][pos[1]] = i+1
-        row[pos[0]][i] = 1
-        col[pos[1]][i] = 1
-        sqare[pos[0] // 3 * 3 + pos[1] // 3][i] = 1
+def go(cnt, itr):
+    find = False
+    if cnt == Ecnt:
+        print('Puzzle', itr)
+        for r in range(9):
+            for c in range(9):
+                print(A[r][c], end='')
+            print()
+        return True
+    r, c = E[cnt]
+    if A[r][c]:
+        find = go(cnt + 1, itr)
+        return find
     for i in range(9):
         for j in range(9):
-            if Map[i][j] == 0:
-                E.append((i,j))
-    E_cnt = len(E)
-    dfs(0)
-    print("Puzzle %d"%tc)
-    tc += 1
-    print(res)
+            if i == j or Visit[i][j]:
+                continue
+            for d in dr:
+                pair_x, pair_y = r + d[0], c + d[1]
+                if 0 <= pair_x <= 8 and 0 <= pair_y <= 8 and not A[pair_x][pair_y]:
+                    if R[r][i] == R[pair_x][j] == C[c][i] == C[pair_y][j] == S[r // 3 * 3 + c // 3][i] == S[pair_x // 3 * 3 + pair_y // 3][j] == 0:
+                        A[r][c], A[pair_x][pair_y] = i + 1, j + 1
+                        Visit[i][j], Visit[j][i] = 1, 1
+                        R[r][i], R[pair_x][j], C[c][i], C[pair_y][j], S[r // 3 * 3 + c // 3][i], S[
+                            pair_x // 3 * 3 + pair_y // 3][j] = 1, 1, 1, 1, 1, 1
+                        find = go(cnt + 1, itr)
+                        if find:
+                            return find
+                        A[r][c], A[pair_x][pair_y] = 0, 0
+                        Visit[i][j], Visit[j][i] = 0, 0
+                        R[r][i], R[pair_x][j], C[c][i], C[pair_y][j], S[r // 3 * 3 + c // 3][i], S[
+                            pair_x // 3 * 3 + pair_y // 3][j] = 0, 0, 0, 0, 0, 0
+    return find
+
+
+itr = 1
+while True:
+    N = int(input())
+    dr = [[0, 1], [1, 0]]
+
+    if N == 0:
+        break
+    A = [[0] * 9 for _ in range(9)]
+    Visit = [[0] * 9 for _ in range(9)]
+    R = [[0] * 9 for _ in range(9)]
+    C = [[0] * 9 for _ in range(9)]
+    S = [[0] * 9 for _ in range(9)]
+    E = []
+    Ecnt = 0
+    for _ in range(N):
+        U, LU, V, LV = input().split()
+        U_x, U_y = ord(LU[0]) - ord('A'), int(LU[1]) - 1
+        V_x, V_y = ord(LV[0]) - ord('A'), int(LV[1]) - 1
+        A[U_x][U_y], A[V_x][V_y] = int(U), int(V)
+        Visit[int(U) - 1][int(V) - 1], Visit[int(V) - 1][int(U) - 1] = 1, 1
+        R[U_x][int(U) - 1], R[V_x][int(V) - 1] = 1, 1
+        C[U_y][int(U) - 1], C[V_y][int(V) - 1] = 1, 1
+        S[U_x // 3 * 3 + U_y // 3][int(U) - 1] = 1
+        S[V_x // 3 * 3 + V_y // 3][int(V) - 1] = 1
+    for i, pos in enumerate(input().split()):
+        pos_x, pos_y = ord(pos[0]) - ord('A'), int(pos[1]) - 1
+        A[pos_x][pos_y] = i + 1
+        R[pos_x][i], C[pos_y][i] = 1, 1
+        S[pos_x // 3 * 3 + pos_y // 3][i] = 1
+    for r in range(9):
+        for c in range(9):
+            if not A[r][c]:
+                E.append([r, c])
+                Ecnt += 1
+    go(0, itr)
+    itr += 1
