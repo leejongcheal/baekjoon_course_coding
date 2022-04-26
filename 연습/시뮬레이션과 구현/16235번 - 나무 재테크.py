@@ -1,89 +1,62 @@
-from collections import defaultdict, Counter
-def spring_summer(Map):
-    for key in Map.keys():
-        t_list = Map[key]
-        i, j = key
-        if len(t_list) == 0:
-            continue
-        new = []
-        flag = 0
-        trash = []
-        for t in t_list:
-            if flag:
-                trash.append(t)
-                continue
-            if t <= muck[i][j]:
-                muck[i][j] -= t
-                t += 1
-                if t % 5 == 0:
-                    mult_5.append((i, j))
-                new.append(t)
-            else:
-                flag = 1
-                trash.append(t)
-        Map[key] = new
-        for tr in trash:
-            muck[i][j] += tr // 2
-
-
-def fall(Map):
-    stesp = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
-    for x, y in mult_5:
-        for dx, dy in stesp:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < N and 0 <= ny < N:
-                Map[(nx, ny)].insert(0,1)
-
-
-def winter():
-    for i in range(N):
-        for j in range(N):
-            muck[i][j] += A[i][j]
-
-
-
+steps = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
 N, M, K = map(int, input().split())
-A = [list(map(int, input().split())) for _ in range(N)]
-Map = defaultdict(list)
+plus = [list(map(int, input().split())) for _ in range(N)]
+tree = [list(map(int, input().split())) for _ in range(M)]
 muck = [[5] * N for _ in range(N)]
-for _ in range(M):
-    x, y, z = map(int, input().split())
-    x -= 1
-    y -= 1
-    Map[(x,y)].append(z)
-
-for key in Map.keys():
-    Map[key].sort()
-# for i in range(N):
-#     for j in range(N):
-#         Map[i][j].sort()
-# Map 완성
+Map = [[dict() for _ in range(N)] for _ in range(N)]  # [(old:cnt)....] 값을 가짐
+for x, y, old in tree:
+    if Map[x - 1][y - 1].get(old, 0) == 0:
+        Map[x - 1][y - 1][old] = 1
+    else:
+        Map[x - 1][y - 1][old] += 1
 time = 0
 while time < K:
-    mult_5 = []  # 나이가 5의 배수인 나무들의 좌표
-    # 봄 + 여름
-    spring_summer(Map)
-    # for m in Map:
-    #     print(m)
-    # print()
-    # for mu in muck:
-    #     print(mu)
-    # print("봄여름끝")
-    # 가을
-    fall(Map)
-    # for m in Map:
-    #     print(m)
-    # print()
-    # for mu in muck:
-    #     print(mu)
-    # print("가을끝")
-    # 겨울
-    winter()
-    # for mu in muck:
-    #     print(mu)
-    # print("겨울울끝")
+    # 봄
+    death = [[0] * N for _ in range(N)]
+    new_tree = [[0]*N for _ in range(N)]
     time += 1
+    for i in range(N):
+        for j in range(N):
+            if not Map[i][j]:
+                continue
+            new = dict()
+            for old in sorted(Map[i][j].keys()):
+                if muck[i][j] >= old * Map[i][j][old]:
+                    muck[i][j] -= old * Map[i][j][old]
+                    new[old + 1] = Map[i][j][old]
+                    if (old + 1) % 5 == 0:
+                        new_tree[i][j] += Map[i][j][old]
+                else:
+                    r, c = divmod(muck[i][j], old)
+                    if r:
+                        new[old + 1] = r
+                        if (old + 1) % 5 == 0:
+                            new_tree[i][j] += r
+                    muck[i][j] = c
+                    death[i][j] += (Map[i][j][old] - r) * (old // 2)
+            Map[i][j] = new
+    # 여름
+    for i in range(N):
+        for j in range(N):
+            muck[i][j] += death[i][j]
+    # 가을
+    for i in range(N):
+        for j in range(N):
+            if new_tree[i][j]:
+                for dx, dy in steps:
+                    nx, ny = i + dx, j + dy
+                    if 0 <= nx < N and 0 <= ny < N:
+                        if Map[nx][ny].get(1, 0) == 0:
+                            Map[nx][ny][1] = new_tree[i][j]
+                        else:
+                            Map[nx][ny][1] += new_tree[i][j]
+    # 겨울
+    for i in range(N):
+        for j in range(N):
+            muck[i][j] += plus[i][j]
 res = 0
-for key in Map.keys():
-    res += len(Map[key])
+for i in range(N):
+    for j in range(N):
+        if Map[i][j]:
+            res += sum(Map[i][j].values())
 print(res)
