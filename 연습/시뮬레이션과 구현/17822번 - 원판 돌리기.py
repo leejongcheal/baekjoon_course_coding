@@ -1,52 +1,52 @@
-from collections import defaultdict
-steps = [(1, 0),(-1, 0),(0, 1),(0, -1)]
+from copy import deepcopy
+steps = [(1, 0), (-1, 0), (0, 1), (0, -1)]
 N, M, T = map(int, input().split())
 Map = [list(map(int, input().split())) for _ in range(N)]
-r = [list(map(int,input().split())) for _ in range(T)]
-total = N*M
-for t in range(T):
-    m, d, k = r[t]
+steps = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+for _ in range(T):
+    x, d, k = map(int, input().split())
     if d == 0:
-        k *= -1
-    c = k % M
-    for i in range(m, N + 1, m):
-        Map[i - 1] = Map[i-1][c:] + Map[i-1][0:c]
-    # 회전 끝
-    # for a in Map:
-    #     print(a)
-    # print()
-    adjoin = set()
+        d = -1
+    # 회전
     for i in range(N):
-        for j in range(M):
-            if Map[i][j] != 0:
-                temp = Map[i][j]
-                flag = 0
-                for dx, dy in steps:
-                    nx, ny = i + dx, j + dy
-                    ny = ny % M
-                    if 0 <= nx < N and Map[nx][ny] == temp:
-                        flag = 1
-                        adjoin.add((nx, ny))
-                if flag:
-                    adjoin.add((i, j))
-    total -= len(adjoin)
-    for i, j in adjoin:
-        Map[i][j] = 0
-    if len(adjoin) == 0 and total != 0:
-        total_sum = sum([sum(x) for x in Map])
-        avc = total_sum / total
-        # print(avc, total_sum, total)
-        for i in range(N):
-            for j in range(M):
-                if Map[i][j] != 0:
-                    if Map[i][j] < avc:
-                        Map[i][j] += 1
-                    elif Map[i][j] > avc:
-                        Map[i][j] -= 1
-    if total == 0:
+        if (i + 1) % x == 0:
+            Map[i] = Map[i][(d*k)%M:] + Map[i][:(d*k)%M]
+    # 인접하는 값 0으로 채우기
+    flag = 0 # 인접한 값이 있는경우 1 주기
+    # 업데이트 도중에 Map의 값이 바뀌는 경우를 방지하기위해 현재 Map값을 저장해서 비교에 사용함
+    new_Map = deepcopy(Map)
+    for x in range(N):
+        for y in range(M):
+            val = new_Map[x][y]
+            if val == 0:
+                continue
+            for dx, dy in steps:
+                nx, ny = x + dx, (y + dy) % M
+                if 0 <= nx < N and new_Map[nx][ny] == val:
+                    flag = 1
+                    Map[nx][ny] = 0
+                    Map[x][y] = 0
+    # 인접한 값이 없는 경우 평균 구하기
+    if flag:
+        continue
+    cnt, total = 0, 0
+    for x in range(N):
+        for y in range(M):
+            if Map[x][y] != 0:
+                cnt += 1
+                total += Map[x][y]
+    if cnt == 0:
         break
-    # for a in Map:
-    #     print(a)
-    # print(1)
-res = sum([sum(x) for x in Map])
-print(res)
+    avc = total / cnt
+    # 평균과 비교해서 채우기
+    for x in range(N):
+        for y in range(M):
+            if Map[x][y] != 0:
+                if Map[x][y] < avc:
+                    Map[x][y] += 1
+                elif Map[x][y] > avc:
+                    Map[x][y] -= 1
+print(sum([sum(x) for x in Map]))
+
+
+
