@@ -1,82 +1,63 @@
 from collections import defaultdict
-# 이동및 이동한 체스들 값 업데이트
-def white(x, y, nx, ny, index):
-    global flag
-    temp = q_Map[x][y]
-    if q_Map[nx][ny] == 0:
-        q_Map[nx][ny] = q_Map[x][y]
+def change_d(d):
+    if d in [0,1]:
+        d = d ^ 1
     else:
-        q_Map[nx][ny] += q_Map[x][y]
-    q_Map[x][y] = 0
-    if len(q_Map[nx][ny]) >= 4:
-        flag = 1
-    for i in temp:
-        chess[i][0], chess[i][1] = nx, ny
-
-def red(x, y, nx, ny, index):
+        d = (d-2)^1 + 2
+    return d
+def move(cnt, num):
     global flag
-    temp = q_Map[x][y]
-    if q_Map[nx][ny] == 0:
-        q_Map[nx][ny] = q_Map[x][y][::-1]
-    else:
-        q_Map[nx][ny] += q_Map[x][y][::-1]
-    q_Map[x][y] = 0
-    if len(q_Map[nx][ny]) >= 4:
-        flag = 1
-    for i in temp:
-        chess[i][0], chess[i][1] = nx, ny
-
-def blue(index):
-    x, y, d = chess[index]
-    d += 1
-    if d == 2:
-        d = 0
-    elif d == 4:
-        d = 2
-    chess[index][2] = d
+    x, y, d = horse_pos[num]
     dx, dy = steps[d]
     nx, ny = x + dx, y + dy
     if 0 <= nx < N and 0 <= ny < N:
-        if Map[nx][ny] == 0:
-            white(x, y, nx, ny, index)
-        elif Map[nx][ny] == 1:
-            red(x, y, nx, ny, index)
-    # 범위밖 또는 파랑색을 만나는경우 반대방향 및 좌표 유지
+        if Map[nx][ny] == 0 or Map[nx][ny] == 1:
+            for i in horse_shape[(x, y)]:
+                hx, hy, hd = horse_pos[i]
+                horse_pos[i] = [nx, ny, hd]
+            if Map[nx][ny] == 0:
+                horse_shape[(nx, ny)].extend(horse_shape[(x, y)])
+            elif Map[nx][ny] == 1:
+                horse_shape[(nx, ny)].extend(horse_shape[(x, y)][::-1])
+            if len(horse_shape[(nx, ny)]) >= 4:
+                flag = 1
+                return
+            horse_shape[(x, y)] = []
+        elif Map[nx][ny] == 2:
+            if cnt == 0:
+                d = change_d(d)
+                horse_pos[num] = [x, y, d]
+                move(cnt + 1, num)
+    else:
+        if cnt == 0:
+            d = change_d(d)
+            horse_pos[num] = [x, y, d]
+            move(cnt + 1, num)
 
 
-steps= [(0, 1),(0, -1),(-1, 0),(1, 0)] # 오 왼 위 아래
-flag = 0
+
+steps = [(0,1),(0,-1),(-1,0),(1, 0)]
 N, K = map(int, input().split())
 Map = [list(map(int, input().split())) for _ in range(N)]
-q_Map = [[0]*N for _ in range(N)]
-chess = defaultdict()
-for i in range(1, K+1):
+horse_pos = []
+horse_shape = defaultdict(list)
+for i in range(K):
     x, y, d = map(int, input().split())
-    chess[i] = [x-1, y-1, d-1]
-    q_Map[x-1][y-1] = [i]
-# 맵과 체스 완성
+    x, y, d = x - 1, y - 1, d - 1
+    horse_pos.append([x, y, d])
+    horse_shape[(x, y)].append(i)
 time = 1
-res = -1
+flag = 0
 while time <= 1000:
-    for index in range(1, K + 1):
-        x, y, d = chess[index]
-        # 맨아래에 있는경우만 이동
-        if q_Map[x][y][0] == index:
-            dx, dy = steps[d]
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < N and 0 <= ny < N:
-                if Map[nx][ny] == 0:
-                    white(x, y, nx, ny, index)
-                elif Map[nx][ny] == 1:
-                    red(x, y, nx, ny, index)
-                elif Map[nx][ny] == 2:
-                    blue(index)
-            else:
-                blue(index)
-        if flag:
-            break
-    if flag:
-        res = time
+    # 말이동
+    for i in range(K):
+        x, y, d = horse_pos[i]
+        # 이동 가능한 경우
+        if horse_shape[(x, y)][0] == i:
+            move(0, i)
+    if flag == 1:
         break
     time += 1
-print(res)
+if time > 1000:
+    time = -1
+print(time)
