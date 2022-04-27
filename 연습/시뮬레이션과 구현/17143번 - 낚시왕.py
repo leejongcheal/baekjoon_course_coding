@@ -1,59 +1,57 @@
 from collections import defaultdict
-
-
-def change_d(d):
-    d += 1
-    if d == 2:
-        d = 0
-    elif d == 4:
-        d = 2
-    return d
-
-
-steps = [(-1, 0), (1, 0), (0, 1), (0, -1)] # 2 -> 0 4-> 2 위 아래 오른 왼
+steps = [(-1, 0),(1, 0),(0, 1),(0, -1)]
 N, M, S = map(int, input().split())
-Map = defaultdict(list)
+Map = [[0]*M for _ in range(N)]
+shark = defaultdict(int)
 for _ in range(S):
     x, y, s, d, z = map(int, input().split())
-    d -= 1
+    x, y, d = x - 1, y - 1, d - 1
+    Map[x][y] = 1
     if d < 2:
-        s %= (N-1)*2
+        s %= 2*(N - 1)
     else:
-        s %= (M-1)*2
-    Map[(x - 1, y - 1)].append((z, s, d))
-# 상어 위치 넣기
-index = 0
+        s %= 2*(M - 1)
+    shark[(x, y)] = [d, s, z]
+human = -1
 res = 0
-# print(Map)
-while index < M:
-    # 상어잡기 + 상어이동도 동시에하기
-    min_x = N
-    for x, y in Map.keys():
-        if y == index:
-            min_x = min(min_x, x)
-    if min_x != N:
-        res += Map[(min_x, index)][0][0]
-    # 상어 이동 -> 겹치는 상어 없애기
-    temp = defaultdict(list)
-    for x, y in Map.keys():
-        if x == min_x and y == index:
+while human < M-1:
+    human += 1
+    # 상어잡기
+    for i in range(0, N):
+        if Map[i][human] == 1:
+            res += shark[(i, human)][2]
+            Map[i][human] = 0
+            # 예외처리를 위해서 굳이 이것도 0으로 표시해줘야함
+            shark[(i, human)] = 0
+            break
+    # 상어이동
+    new_shark = defaultdict(int)
+    new_Map = [[0]*M for _ in range(N)]
+    for x, y in shark.keys():
+        # 위에서 지워진 경우 예외처리, Map으로 하지않는 이유는 밑에서 업데이트 하는 과정에 섞일수 있으니
+        if shark[(x, y)] == 0:
             continue
-        z, s, d = Map[(x, y)][0]
+        d, s, z = shark[(x, y)]
         nx, ny = x, y
-        for _ in range(s):
+        idx = 0
+        while idx < s:
             dx, dy = steps[d]
-            nx, ny = x + dx, y + dy
-            if not (0 <= nx < N and 0 <= ny < M):
-                d = change_d(d)
-                dx, dy = steps[d]
-                nx, ny = x + dx, y + dy
-            x, y = nx, ny
-        temp[(x, y)].append((z, s, d))
-    for key in temp.keys():
-        if len(temp[key]) > 1:
-            temp[key].sort()
-            temp[key] = [temp[key][-1]]
-    Map = temp
-    # print(Map)
-    index += 1
+            while 0 <= nx + dx < N and 0 <= ny + dy < M and idx < s:
+                idx += 1
+                nx += dx
+                ny += dy
+            if idx < s:
+                if d in [0, 1]:
+                    d = d ^ 1
+                else:
+                    d = (d-2) ^ 1 + 2
+        Map[x][y] = 0
+        new_Map[nx][ny] = 1
+        if new_shark[(nx, ny)] == 0:
+            new_shark[(nx, ny)] = [d, s, z]
+        else:
+            if new_shark[(nx, ny)][2] < z:
+                new_shark[(nx, ny)] = [d,s,z]
+    shark = new_shark
+    Map = new_Map
 print(res)
