@@ -1,57 +1,35 @@
-from copy import deepcopy
-def dfs(visit, now_index):
+def dfs(val, op_idx, num):
     global res
-    if now_index >= M - 1:
-        val = 0
-        index = 0
-        while index < M:
-            if visit[index] != 1:
-                if index == 0:
-                    val = int(number[index])
-                else:
-                    val = eval(str(val) + oper[index - 1] + number[index])
-                index += 1
-            else:
-                if index == 0:
-                    val = eval(number[index] + oper[index] + number[index+1])
-                else:
-                    sum_n = eval(number[index] + oper[index] + number[index+1])
-                    val = eval(str(val) + oper[index - 1] + str(sum_n))
-                index += 2
+    if op_idx == oper_cnt:
         res = max(res, val)
-        return
-    # 현재 선택
-    visit[now_index], visit[now_index + 1] = 1, 1
-    tv = tuple(visit)
-    if tv not in visit_set:
-        visit_set.add(tv)
-        dfs(visit, now_index + 2)
-    visit[now_index], visit[now_index + 1] = -1, -1
-    # 현재선택안하는 경우
-    visit[now_index], visit[now_index + 1] = 0, 0
-    tv = tuple(visit)
-    if tv not in visit_set:
-        visit_set.add(tv)
-        dfs(visit, now_index + 2)
-    visit[now_index], visit[now_index + 1] = -1, -1
-    # 다음값을 넘김
-    visit[now_index] = 0
-    tv = tuple(visit)
-    if tv not in visit_set:
-        visit_set.add(tv)
-        dfs(visit, now_index + 1)
-    visit[now_index] = -1
+    # 한개 가능
+    if op_idx + 1 <= oper_cnt:
+        temp = eval(str(val) + oper[op_idx] + num[0])
+        dfs(temp, op_idx + 1, num[1:])
+    # 두개 가능
+    if op_idx + 2 <= oper_cnt:
+        temp = eval(str(val) + oper[op_idx] + '(' + num[0] + oper[op_idx + 1] + num[1] + ')')
+        dfs(temp, op_idx + 2, num[2:])
 
 
 N = int(input())
-L = list(input())
-number = [L[i] for i in range(N) if i % 2 == 0]
-oper = [L[i] for i in range(N) if i % 2 == 1]
-M = len(number)
-visit_set = set()
-res = -(2**32)
+idx = 0
+num = []
+oper = []
+for s in list(input()):
+    if idx % 2 == 0:
+        num.append(s)
+    else:
+        oper.append(s)
+    idx += 1
+num_cnt = len(num)
+oper_cnt = len(oper)
+res = -(1e10)
 if N == 1:
-    res = int(number[0])
+    res = int(num[0])
+elif N == 3:
+    res = eval(num[0] + oper[0] + num[1])
 else:
-    dfs([-1]*M, 0)
+    dfs(int(num[0]), 0, num[1:])
+    dfs(eval(num[0] + oper[0] + num[1]), 1, num[2:])
 print(res)
