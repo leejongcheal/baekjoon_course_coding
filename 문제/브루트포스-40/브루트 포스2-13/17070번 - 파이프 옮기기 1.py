@@ -1,30 +1,33 @@
-# 사실상 문제의도는 DP로 낸거같음.
-
-def dfs(x, y, shape):
-    global res
-    if res >= 1000000:
-        return
-    if x == N - 1 and y == N - 1:
-        res += 1
-        return
-    # -> 이동
-    if shape == 0 or shape == 2:
-        nx, ny = x + 0, y + 1
-        if ny < N and Map[nx][ny] == 0:
-            dfs(nx, ny, 0)
-    # | 이동
-    if shape == 1 or shape == 2:
-        nx, ny = x + 1 , y
-        if nx < N and Map[nx][ny] == 0:
-            dfs(nx, ny, 1)
-    # \ 이동
-    nx, ny = x + 1, y + 1
-    if nx < N and ny < N and Map[nx][ny] == 0:
-        if Map[x+1][y] == 0 and Map[x][y + 1] == 0:
-            dfs(nx, ny, 2)
+from collections import deque, defaultdict
+visit = defaultdict(int) # 도달한 갯수를 저장하자.
 N = int(input())
 Map = [list(map(int, input().split())) for _ in range(N)]
-res = 0
-dfs(0,1,0)
+shape = 0 # - 0 | 1 \ 2 로 두자
+x, y = 0, 1
+visit[(x, y, shape)] = 1
+q = deque()
+q.append((x, y, shape))
+while q:
+    x, y, shape = q.popleft()
+    # -> 이동
+    if shape in [0, 2]:
+        nx, ny = x , y + 1
+        if 0 <= ny < N and Map[nx][ny] == 0:
+            if visit[(nx, ny, 0)] == 0:
+                q.append((nx, ny, 0))
+            visit[(nx, ny, 0)] += visit[(x, y, shape)]
+    # | 이동
+    if shape in [1, 2]:
+        nx, ny = x + 1, y
+        if 0 <= nx < N and Map[nx][ny] == 0:
+            if visit[(nx, ny, 1)] == 0:
+                q.append((nx, ny, 1))
+            visit[(nx, ny, 1)] += visit[(x, y, shape)]
+    # \ 이동
+    nx, ny = x + 1, y + 1
+    if 0 <= nx < N and 0 <= ny < N and Map[nx][ny] == Map[x][y+1] == Map[x+1][y] == 0:
+        if visit[(nx, ny, 2)] == 0:
+            q.append((nx, ny, 2))
+        visit[(nx, ny, 2)] += visit[(x, y, shape)]
+res = visit[(N-1, N-1, 0)] + visit[(N-1, N-1, 1)] + visit[(N-1, N-1, 2)]
 print(res)
-
