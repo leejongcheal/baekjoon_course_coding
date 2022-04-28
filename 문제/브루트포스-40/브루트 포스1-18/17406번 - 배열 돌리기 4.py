@@ -1,54 +1,50 @@
 from itertools import permutations
 from copy import deepcopy
-
-
-def rotation(ro, Map):
-    r, c, s = R[ro]
-    r -= 1
-    c -= 1
-    origin = deepcopy(Map)
-    sx, sy = r - s, c - s
-    while sx != r and sy != c:
+steps = [(0, 1),(1, 0),(0, -1),(-1, 0)]
+def rotation_fun(r, c, s):
+    ssx, ssy = r - s, c - s
+    L = []
+    sx, sy = ssx, ssy
+    for i in range(N):
+        if sx == r and sy == c:
+            break
+        t = []
         x, y = sx, sy
-        d = 0
-        dx, dy = steps[d]
-        while y != c + s:
-            nx, ny = x + dx, y + dy
-            Map[nx][ny] = origin[x][y]
-            x, y = nx, ny
-        d = 1
-        dx, dy = steps[d]
-        while x != r + s:
-            nx, ny = x + dx, y + dy
-            Map[nx][ny] = origin[x][y]
-            x, y = nx, ny
-        d = 2
-        dx, dy = steps[d]
-        while y != c - s:
-            nx, ny = x + dx, y + dy
-            Map[nx][ny] = origin[x][y]
-            x, y = nx, ny
-        d = 3
-        dx, dy = steps[d]
-        while x != r - s:
-            nx, ny = x + dx, y + dy
-            Map[nx][ny] = origin[x][y]
-            x, y = nx, ny
+        for dx, dy in steps:
+            for j in range(2*(s - i)):
+                x += dx
+                y += dy
+                t.append(temp[x][y])
+        L.append(t[-1:] + t[: -1])
         sx += 1
         sy += 1
-        s -= 1
-    return Map
+    sx, sy = ssx, ssy
+    for i in range(N):
+        if sx == r and sy == c:
+            break
+        idx = 0
+        t = L[i]
+        x, y = sx, sy
+        for dx, dy in steps:
+            for j in range(2*(s - i)):
+                x += dx
+                y += dy
+                temp[x][y] = t[idx]
+                idx += 1
+        sx += 1
+        sy += 1
 
 
-steps = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-res = int(1e10)
 N, M, K = map(int, input().split())
 origin = [list(map(int, input().split())) for _ in range(N)]
-R = [list(map(int, input().split())) for _ in range(K)]
-for comb in permutations(range(K), K):
+rotation = [list(map(int, input().split())) for _ in range(K)]
+r = [i for i in range(K)]
+res = int(1e10)
+for r_order in permutations(r):
     temp = deepcopy(origin)
-    for ro in comb:
-        temp = rotation(ro, temp)
-    for t in temp:
-        res = min(res, sum(t))
+    for i in r_order:
+        r, c, s = rotation[i]
+        r, c = r - 1, c - 1
+        rotation_fun(r, c, s)
+    res = min(res, min([sum(x) for x in temp]))
 print(res)
