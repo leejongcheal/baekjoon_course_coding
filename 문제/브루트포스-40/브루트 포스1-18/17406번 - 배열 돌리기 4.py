@@ -41,7 +41,7 @@ rotation = [list(map(int, input().split())) for _ in range(K)]
 r = [i for i in range(K)]
 res = int(1e10)
 for r_order in permutations(r):
-    temp = deepcopy(origin)
+    temp = [origin[i][:] for i in range(N)]
     for i in r_order:
         r, c, s = rotation[i]
         r, c = r - 1, c - 1
