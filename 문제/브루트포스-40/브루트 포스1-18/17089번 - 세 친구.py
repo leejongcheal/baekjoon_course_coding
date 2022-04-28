@@ -1,34 +1,23 @@
 from collections import defaultdict
-def dfs(now, tracked):
-    global res
-    if len(tracked) == 3:
-        a, b, c = tracked
-        val = len(friend[a]) + len(friend[b]) + len(friend[c]) - 6
-        res = min(res, val)
-        return
-    for next in friend[now]:
-        if len(tracked) == 1 and len(friend[next]) > 1 and visit[next] == 0:
-            dfs(next, tracked + [next])
-        else:
-            a = tracked[0]
-            if next in friend[a] and visit[next] == 0:
-                dfs(next, tracked + [next])
-
-
-INF = int(1e10)
-res = INF
 N, M = map(int, input().split())
-friend = defaultdict(set)
+friend = defaultdict(list)
+visit = defaultdict(int)
 for _ in range(M):
     a, b = map(int, input().split())
-    friend[a].add(b)
-    friend[b].add(a)
-visit = [0]*(N+1)
-for i in range(1, N + 1):
-    if len(friend[i]) != 0:
-        visit[i] = 1
-        dfs(i,[i])
+    friend[a].append(b)
+    friend[b].append(a)
+INF = res = int(1e10)
+r = set()
+cnt = 0
+ccnt = 0
+for a in range(1, N + 1):
+    for b in friend[a]:
+        if visit[(a, b)] == 0:
+            visit[(a, b)] = visit[(b, a)] = 1
+            for c in friend[b]:
+                ccnt += 1
+                if c in friend[a]:
+                    res = min(res, len(friend[a]) + len(friend[b]) + len(friend[c]) - 6)
 if res == INF:
-    print(-1)
-else:
-    print(res)
+    res = -1
+print(res)
