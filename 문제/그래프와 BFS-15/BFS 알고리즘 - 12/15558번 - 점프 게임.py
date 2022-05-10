@@ -13,9 +13,9 @@ while q:
         if res:
             break
         x, y = q.pop()
-        for nx, ny in [(x, y - 1),(x, y + 1),(x^1, y + K)]:
+        for nx, ny in [(x, y - 1), (x, y + 1), (x ^ 1, y + K)]:
             if 0 <= ny < N and L[nx][ny] == "1":
-                L[nx][ny] = 0 # 방문처리해서 중복방문 못하게
+                L[nx][ny] = 0  # 방문처리해서 중복방문 못하게
                 temp.append((nx, ny))
             elif ny >= N:
                 res = 1
