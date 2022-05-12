@@ -1,58 +1,56 @@
-from collections import defaultdict, deque
-
-steps = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+from collections import deque, defaultdict
+from copy import deepcopy
+def move_xy(x, y, dx, dy, cx, cy):
+    while 1:
+        x += dx
+        y += dy
+        # 벽만난 경우
+        if Map[x][y] == "#":
+            return x - dx, y - dy, 1
+        elif x == cx and y == cy:
+            # 벽,구슬만난경우
+            if Map[x+dx][y+dy] == "#":
+                return x - dx, y - dy, 1
+            else:
+                return x, y, 0
+        # 구멍에 빠진경우
+        elif Map[x][y] == "O":
+            return -1, -1, 1
+def move(rx, ry, bx, by, dx, dy):
+    rx, ry, t = move_xy(rx, ry, dx, dy, bx, by)
+    if t == 0:
+        bx, by, t = move_xy(bx, by, dx, dy, rx, ry)
+        rx, ry, t = move_xy(rx, ry, dx, dy, bx, by)
+    bx, by, t = move_xy(bx, by, dx, dy, rx, ry)
+    return rx, ry, bx, by
+steps = [(1, 0),(-1, 0),(0, 1),(0, -1)]
 N, M = map(int, input().split())
 Map = [list(input()) for _ in range(N)]
 for i in range(N):
     for j in range(M):
         if Map[i][j] == "R":
             rx, ry = i, j
-        elif Map[i][j] == "B":
+        if Map[i][j] == "B":
             bx, by = i, j
-        elif Map[i][j] == "O":
-            ex, ey = i, j
-visit = defaultdict(int)
-visit[(rx, ry, bx, by)] = 1
+Map[rx][ry] = Map[bx][by] = "."
 q = deque()
-q.append((0, rx, ry, bx, by))
+visit = defaultdict(int)
+q.append((rx, ry, bx, by, 0))
+visit[(rx, ry, bx, by)] = 1
 res = -1
 while q:
-    flag = 0
-    time, rx, ry, bx, by = q.popleft()
+    rx, ry, bx, by, cnt = q.popleft()
     for dx, dy in steps:
-        rflag = bflag = 0
-        # 벽또는 멈춘다른공 만나서 멈춘 경우 1 / 구멍에 빠지면 2두기 / 3은 중간에 두공이 같은칸에서 만나는 경우
-        nrx, nry = rx, ry
-        nbx, nby = bx, by
-        while rflag == 0 or bflag == 0:
-            if rflag == 0 and Map[nrx + dx][nry + dy] == "#":  # or (bflag == 1 and nrx + dx == nbx and nry + dy == nby):
-                rflag = 1
-            if bflag == 0 and Map[nbx + dx][nby + dy] == "#":  # or (rflag == 1 and nbx + dx == nrx and nby + dy == nry):
-                bflag = 1
-            if rflag == 0 and bflag == 1 and nrx + dx == nbx and nry + dy == nby:
-                rflag = 1
-            if bflag == 0 and rflag == 1 and nbx + dx == nrx and nby + dy == nry:
-                bflag = 1
-            if rflag == 0 and Map[nrx + dx][nry + dy] == "O":
-                rflag = 2
-            if bflag == 0 and Map[nbx + dx][nby + dy] == "O":
-                bflag = 2
-            if rflag == 0:
-                nrx += dx
-                nry += dy
-            if bflag == 0:
-                nbx += dx
-                nby += dy
-            if nrx == nbx and nry == nby:
-                rflag = bflag = 3
-                break
-        if rflag == 2 and bflag != 2:
-            res = time + 1
-            flag = 1
+        nrx, nry, nbx, nby = move(rx, ry, bx, by, dx, dy)
+        if visit[(nrx, nry, nbx, nby)] != 0:
+            continue
+        visit[(nrx, nry, nbx, nby)] = 1
+        if nrx == -1 and nbx != -1:
+            res = cnt + 1
             break
-        elif rflag == bflag == 1 and visit[(nrx, nry, nbx, nby)] == 0:
-            visit[(nrx, nry, nbx, nby)] = 1
-            q.append((time + 1, nrx, nry, nbx, nby))
-    if flag:
+        elif nbx == -1:
+            continue
+        q.append((nrx, nry, nbx, nby, cnt + 1))
+    if res != -1:
         break
 print(res)
