@@ -1,71 +1,57 @@
+from collections import deque, defaultdict
 from copy import deepcopy
-from collections import deque
-def bfs(x, y, key, res, visit):
+steps = [(1, 0),(-1, 0),(0, 1),(0, -1)]
+def bfs(sx, sy):
+    global res, now_key, Map
     q = deque()
-    q.append((x, y, key))
-    max_key = key
+    if Map[sx][sy].islower():
+        now_key.add(Map[sx][sy])
+    visit[(sx, sy)] = len(now_key)
+    if Map[sx][sy].isupper() and Map[sx][sy].lower() not in now_key:
+        return
+    if Map[sx][sy] == "$":
+        res.add((sx, sy))
+    q.append((sx, sy))
     while q:
-        x, y, key = q.popleft()
-        max_key = key
+        x, y = q.popleft()
         for dx, dy in steps:
             nx, ny = x + dx, y + dy
-            if 0 <= nx < N and 0 <= ny < M and Map[nx][ny] != "*" and (visit[nx][ny] == 0 or visit[nx][ny] != key):
-                if 'a' <= Map[nx][ny] <= 'z':
-                    if Map[nx][ny] not in key:
-                        temp = deepcopy(key)
-                        temp.add(Map[nx][ny])
-                        visit[nx][ny] = temp
-                        q = deque()
-                        q.append((nx, ny, temp))
-                        break
-                    else:
-                        visit[nx][ny] = key
-                        q.append((nx, ny, key))
-                elif "A" <= Map[nx][ny] <= "Z" and Map[nx][ny].lower() in key:
-                    visit[nx][ny] = key
-                    q.append((nx, ny, key))
+            if 0 <= nx < N and 0 <= ny < M and Map[nx][ny] != "*" and visit[(nx,ny)] != len(now_key):
+                visit[(nx, ny)] = len(now_key)
+                if Map[nx][ny].isupper() and Map[nx][ny].lower() not in now_key:
+                    continue
+                elif Map[nx][ny].islower():
+                    now_key.add(Map[nx][ny])
                 elif Map[nx][ny] == "$":
                     res.add((nx, ny))
-                    visit[nx][ny] = key
-                    q.append((nx, ny, key))
-                elif Map[nx][ny] == ".":
-                    visit[nx][ny] = key
-                    q.append((nx, ny, key))
-    return res, max_key
+                q.append((nx, ny))
 
 
-def solve(Map, key):
-    # 벽 가능성 후보들 뽑기
-    wall = []
-    res = set()
-    for j in range(M):
-        if Map[0][j] != "*":
-            wall.append((-1, j))
-        if Map[N-1][j] != "*":
-            wall.append((N, j))
-    for i in range(N):
-        if Map[i][0] != "*":
-            wall.append((i, -1))
-        if Map[i][M-1] != "*":
-            wall.append((i, M))
-    flag = 1 # key 업데이트 되는지 확인용
-    visit = [[0]*M for _ in range(N)]
-    while flag:
-        pre_key = deepcopy(key)
-        # 벽에대해서 반복문으로 BFS돌고
-        for wx, wy in wall:
-            res, key = bfs(wx, wy, key, res, visit)
-        if pre_key == key:
-            break
-    return len(res)
-
-
-steps= [(1, 0),(-1, 0),(0, 1),(0, -1)]
 for tc in range(int(input())):
     N, M = map(int, input().split())
     Map = [list(input()) for _ in range(N)]
-    key = set(list(input()))
-    if "0" in key:
-        key = set()
-    res = solve(Map, key)
-    print(res)
+    now_key = set(input())
+    # if "0" in now_key:
+    #     now_key = set()
+    start = []
+    visit = defaultdict(int)
+    res = set()
+    for i in range(N):
+        if Map[i][0] != "*":
+            start.append((i, 0))
+        if Map[i][M-1] != "*":
+            start.append((i, M-1))
+    for j in range(M):
+        if Map[0][j] != "*":
+            start.append((0, j))
+        if Map[N-1][j] != "*":
+            start.append((N-1, j))
+    # now_key 변화가 없을떄 까지 돌기
+    while 1:
+        temp = len(now_key)
+        for x, y in start:
+            if len(now_key) != visit[(x, y)]:
+                bfs(x, y)
+        if temp == len(now_key):
+            break
+    print(len(res))
