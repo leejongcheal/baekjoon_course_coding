@@ -1,70 +1,65 @@
+from copy import deepcopy
 fish_steps = [(0, -1),(-1, -1),(-1, 0),(-1, 1),(0, 1),(1, 1),(1, 0),(1, -1)]
 shark_steps = [(-1, 0),(0, -1),(1, 0),(0, 1)]
 def fish_move_check(x, y):
-    global Map
+    global fish
     if not (0 <= x < 4 and 0 <= y < 4):
         return 0
     if x == sx and y == sy:
         return 0
-    for t in taste:
-        if t in Map[x][y]:
-            return 0
+    if taste[x][y] > 0:
+        return 0
     return 1
 def move_shark(d, x, y):
     global cnt, fishs
     dx, dy = shark_steps[d]
     x, y = x + dx, y + dy
-    if 0 <= x < 4 and 0 <= y < 4 and (x, y) not in fishs:
-        cnt += fish[x][y]
-        fishs.add((x, y))
+    if 0 <= x < 4 and 0 <= y < 4:
+        # 위에 묶어서 풀면 안되지 갈순있어야함 범위를 벗어나는 경우를 -1, -1 리턴하도록 변경
+        if (x, y) not in fishs:
+            cnt += fish_cnt[x][y]
+            fishs.add((x, y))
         return x, y
     else:
         return -1, -1
 M, S = map(int, input().split())
-# [1, 2] 냄새, [2, d] 물고기 [3, -1] 상어
-Map = [[[] for _ in range(4)] for _ in range(4)]
-taste = [[1, 1],[1, 2]]
+fish = [[[0, 0, 0, 0, 0, 0, 0, 0] for _ in range(4)] for _ in range(4)]
+taste = [[0]*4 for _ in range(4)]
 for _ in range(M):
     x, y, d = map(int, input().split())
-    Map[x-1][y-1].append([2, d-1])
+    fish[x-1][y-1][d-1] += 1
 sx, sy = map(int, input().split())
 sx -= 1
 sy -= 1
 for _ in range(S):
     # 물고기 복사
-    copy = []
-    for i in range(4):
-        for j in range(4):
-            for f, d in Map[i][j]:
-                if f == 2:
-                    copy.append([i, j, d])
+    copy = deepcopy(fish)
     # 물고기 이동
-    New = [[[] for _ in range(4)] for _ in range(4)]
+    New = [[[0, 0, 0, 0, 0, 0, 0, 0] for _ in range(4)] for _ in range(4)]
     for x in range(4):
         for y in range(4):
-            for f, d in Map[x][y]:
-                if f != 2:
-                    New[x][y].append([f, d])
-                elif f == 2:
-                    for i in range(8):
-                        nd = (d - i) % 8
+            for d in range(8):
+                if fish[x][y][d] != 0:
+                    flag = 0
+                    for dd in range(8):
+                        nd = (d-dd)%8
                         dx, dy = fish_steps[nd]
                         nx, ny = x + dx, y + dy
                         if fish_move_check(nx, ny):
-                            New[nx][ny].append([2, nd])
+                            flag = 1
+                            New[nx][ny][nd] += fish[x][y][d]
                             break
-    Map = New
-    fish = [[0]*4 for _ in range(4)]
+                    # 이동하지 않는경우를 고려하지 않아서 틀림
+                    if flag == 0:
+                        New[x][y][d] += fish[x][y][d]
+    fish = New
+    fish_cnt = [[0]*4 for _ in range(4)]
     for i in range(4):
         for j in range(4):
-            cnt = 0
-            for f, d in Map[i][j]:
-                if f == 2:
-                    cnt += 1
-            fish[i][j] = cnt
+            fish_cnt[i][j] = sum(fish[i][j])
     # 상어 이동
-    max_cnt = 0
-    res_d = []
+    max_cnt = -1 # 0 으로 두고 시작함
+    res_d = [] # 만약에 위를 0으로 두었다면 []으로 되서 문제가 생김
     for a in range(4):
         for b in range(4):
             for c in range(4):
@@ -88,39 +83,21 @@ for _ in range(S):
     for d in res_d:
         dx, dy = shark_steps[d]
         x, y = x + dx, y + dy
-        temp = Map[x][y]
-        Map[x][y] = []
-        flag = 0
-        for f, d in temp:
-            if f != 2:
-                Map[x][y].append([f, d])
-            elif f == 2:
-                if flag == 0:
-                    Map[x][y].append([1,3])
-                    flag = 1
+        if sum(fish[x][y]) != 0:
+            taste[x][y] = 3
+            fish[x][y] = [0,0,0,0,0,0,0,0]
     sx, sy = x, y
     # 물고기 냄새 -1해주기
     for i in range(4):
         for j in range(4):
-            temp = Map[i][j]
-            Map[i][j] = []
-            for f, d in temp:
-                if f == 1:
-                    d -= 1
-                    if d != 0:
-                        Map[i][j].append([f, d])
-                else:
-                    Map[i][j].append([f, d])
+            taste[i][j] -= 1
     # 물고기 복사
-    for x, y, d in copy:
-        Map[x][y].append([2, d])
-fish = [[0]*4 for _ in range(4)]
+    for i in range(4):
+        for j in range(4):
+            for d in range(8):
+                fish[i][j][d] += copy[i][j][d]
+res = 0
 for i in range(4):
     for j in range(4):
-        cnt = 0
-        for f, d in Map[i][j]:
-            if f == 2:
-                cnt += 1
-        fish[i][j] = cnt
-res = sum([sum(x) for x in fish])
+        res += sum(fish[i][j])
 print(res)
