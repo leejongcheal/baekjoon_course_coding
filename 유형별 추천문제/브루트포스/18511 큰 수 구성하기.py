@@ -1,28 +1,17 @@
-N, cnt = input().split()
+def dfs(now):
+    global res
+    if len(res) > N_len or int(now) > N:
+        return
+    if now and int(now) <= N:
+        res = str(max(int(res), int(now)))
+    for l in L:
+        dfs(now+l)
+
+
+N, cnt = map(int, input().split())
+N_len = len(str(N))
 L = list(input().split())
-L.sort(reverse=True)
 same = 1
-res = []
-for n in N:
-    if n < L[-1] and same:
-        if res:
-            val = int(res[-1]) - 1
-            if val != 0:
-                res[-1] = str(val)
-                res.append(L[0])
-            else:
-                res[-1] = L[0]
-        same = 0
-        continue
-    if same:
-        for l in L:
-                if l == n:
-                    res.append(l)
-                    break
-                elif l < n:
-                    res.append(l)
-                    same = 0
-                    break
-    else:
-        res.append(L[0])
-print("".join(res))
+res = "0"
+dfs("0")
+print(int(res))
