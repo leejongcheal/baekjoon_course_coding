@@ -8,11 +8,15 @@ def dfs(i, split):
         res = max(res, value)
         return
     i += 1
+    flag = 0
     for idx in range(len(split)):
         temp = split[::]
+        if temp[idx] == 0:
+            flag = 1
         temp[idx] += L[i]
         dfs(i, temp)
-
+        if flag:
+            break
 
 N = int(input())
 L = list(map(int, input().split()))
