@@ -24,6 +24,40 @@ def hot_wind():
             now -= 1
             new = temp
 
+def bal():
+    global Map, wall, next_step, hot, R, C
+    steps = [(0,1,0),(1,0,3)]
+    temp = deepcopy(Map)
+    for i in range(R):
+        for j in range(C):
+            for dx, dy, d in steps:
+                nx, ny = i +dx, j + dy
+                if 0 <= nx < R and 0 <= ny <C and d not in wall[i][j]:
+                    d = abs(Map[i][j] - Map[nx][ny])//4
+                    if Map[i][j] > Map[nx][ny]:
+                        d = -1 * d
+                    temp[i][j] += d
+                    temp[nx][ny] -= d
+    Map = temp
+def minus1():
+    global Map, wall, next_step, hot, R, C
+    for j in range(C):
+        if Map[0][j] >= 1:
+            Map[0][j] -= 1
+        if Map[-1][j] >= 1:
+            Map[-1][j] -= 1
+    for i in range(1, R-1):
+        if Map[i][0] >= 1:
+            Map[i][0] -= 1
+        if Map[i][-1] >= 1:
+            Map[i][-1] -= 1
+
+def d_check():
+    global Map, check, K
+    for x, y in check:
+        if not (Map[x][y] >= K):
+            return 0
+    return 1
 
 
 R, C, K = map(int, input().split())
@@ -64,5 +98,14 @@ while 1:
         break
     # 온풍기 바람 발생
     hot_wind()
-
-    print(1)
+    # 온도조절
+    bal()
+    # 바깥쪽 -1
+    minus1()
+    # 초콜릿
+    cnt += 1
+    # check 하기
+    flag = d_check()
+    if flag:
+        break
+print(cnt)
