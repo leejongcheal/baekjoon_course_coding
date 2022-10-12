@@ -48,6 +48,7 @@ def bomb():
     L_new = []
     if L_value[0] == 0:
         L_value = [0]*(N*N-1)
+        return
     pre = L_value[0]
     cnt = 1
     while i < len(L_value) and L_value[i] != 0:
@@ -81,6 +82,7 @@ def change():
     '''
     if L_value[0] == 0:
         L_value = [0]*(N*N-1)
+        return
     pre = L_value[0]
     cnt = 1
     i = 1
