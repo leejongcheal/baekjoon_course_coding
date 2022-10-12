@@ -86,7 +86,7 @@ def change():
     pre = L_value[0]
     cnt = 1
     i = 1
-    while i < len(L_value) and L_value[i] != 0:
+    while i < len(L_value) and L_value[i] != 0 and len(L_new) < N*N:
         if pre != L_value[i]:
             L_new.append(cnt)
             L_new.append(pre)
@@ -130,5 +130,6 @@ for cnt in range(M):
             break
     # 구슬 변환
     change()
+
 total = sum([i*res[i] for i in range(4)])
 print(total)
