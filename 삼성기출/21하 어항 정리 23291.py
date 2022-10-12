@@ -1,75 +1,93 @@
-def balence(L):
-    value = [[0] * len(L[-1]) for _ in range(len(L))]
-    for x in range(len(L)):
-        for y in range(len(L[x])):
+import copy
+def rotate_90(rota):
+    N, M = len(rota), len(rota[0])
+    rrota = [[0]*N for _ in range(M)]
+    for i in range(N):
+        for j in range(M):
+            rrota[j][N-1-i] = rota[i][j]
+    return rrota
+def rotate_180(rota):
+    N, M = len(rota), len(rota[0])
+    rrota = [[0]*M for _ in range(N)]
+    for i in range(N):
+        for j in range(M):
+            rrota[N-1-i][M-1-j] = rota[i][j]
+    return rrota
+def bal(LL, steps):
+    temp = copy.deepcopy(LL)
+    for i in range(len(LL)):
+        for j in range(len(LL[i])):
             for dx, dy in steps:
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < len(L) and 0 <= ny < len(L[nx]):
-                    d = abs(L[x][y] - L[nx][ny]) // 5
-                    if L[x][y] > L[nx][ny]:
-                        value[x][y] -= d
-                        value[nx][ny] += d
-                    else:
-                        value[x][y] += d
-                        value[nx][ny] -= d
-    for x in range(len(L)):
-        for y in range(len(L[x])):
-            L[x][y] += value[x][y]
-    for x in range(len(L)):
-        L[x] += ["#"] * (len(L[-1]) - len(L[x]))
-    New = []
-    for y in range(len(L[x])):
-        for x in range(len(L) - 1, -1, -1):
-            if L[x][y] != "#":
-                New.append(L[x][y])
-    L = New
-    return L
-steps = [(0, 1),(1, 0)]
+                ni, nj = i + dx, j + dy
+                if 0 <= ni < len(LL) and 0 <= nj < len(LL[ni]):
+                    d = abs(LL[i][j] - LL[ni][nj]) // 5
+                    if LL[i][j] < LL[ni][nj]:
+                        d = -1 * d
+                    temp[i][j] -= d
+                    temp[ni][nj] += d
+    return temp
+steps = [(0, 1),(1,0)]
 N, K = map(int, input().split())
 L = list(map(int, input().split()))
-M, m = max(L), min(L)
 cnt = 0
-while M - m > K:
+M, m = max(L), min(L)
+while M- m > K:
     cnt += 1
-    New = []
-    # 최솟값 += 1
+    # 작은 물고기 + 1
     m = min(L)
     for i in range(len(L)):
         if L[i] == m:
             L[i] += 1
-    # 하나 위로 올리기
-    New = []
-    New.append([L[0]])
-    New.append(L[1:])
-    L = New
-    # 90회전
-    while 1:
-        h, w = len(L), len(L[0])
-        if len(L[-1]) - w < h:
-            break
-        New = [[0]*h for _ in range(w)]
-        for i in range(h):
-            for j in range(w):
-                New[j][h-1-i] = L[i][j]
-        temp = L[-1][w:]
-        New.append(temp)
-        L = New
-    # 물고기수 조절
-    L = balence(L)
-    split = L[:len(L)//2]
-    New = []
-    New.append(split[::-1])
-    New.append(L[len(L)//2:])
-    L = New
-    n, m = len(L), len(L[0]) // 2
-    split = [[0]*m for _ in range(n)]
-    for i in range(n):
-        for j in range(m):
-            split[-(i+1)][-(j+1)] = L[i][j]
-    for i in range(n):
-        split.append(L[i][m:])
-    L = split
-    L = balence(L)
+    # 한칸 올리기
+    LL = []
+    LL.append([L[0]])
+    LL.append(L[1:])
+    # 높이 2개이상 90도 회전
+    H = len(LL)
+    W = len(LL[0])
+    R = len(LL[-1]) - W
+    while R >= H:
+        rota = []
+        for i in range(H):
+            rota.append(LL[i][:W])
+        re_l = LL[-1][W:]
+        rota = rotate_90(rota)
+        rota.append(re_l)
+        LL = rota
+        H = len(LL)
+        W = len(LL[0])
+        R = len(LL[-1]) - W
+    # 인접물고기 계산
+    LL = bal(LL,steps)
+    temp = []
+    # 일자 배열
+    for j in range(len(LL[-1])):
+        temp.append(LL[-1][j])
+        if 0 <= j < len(LL[0]):
+            for i in range(len(LL)-2, -1,-1):
+                temp.append(LL[i][j])
+    LL = temp
+    # 공중배열 2번
+    L = LL[:len(LL)//2]
+    R = LL[len(LL)//2:]
+    rota = rotate_180([L])
+    rota.append(R)
+    LL = rota
+    L = []
+    R = []
+    for l in LL:
+        L.append(l[:len(l)//2])
+        R.append(l[len(l)//2:])
+    rota = rotate_180(L)
+    for r in R:
+        rota.append(r)
+    LL = rota
+    # 두번 회전후 밸런스
+    LL = bal(LL,steps)
+    temp = []
+    for j in range(len(LL[0])):
+        for i in range(len(LL)-1,-1,-1):
+            temp.append(LL[i][j])
+    L = temp
     M, m = max(L), min(L)
 print(cnt)
-
