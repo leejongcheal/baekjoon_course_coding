@@ -3,11 +3,11 @@ def make_remove_index(cnt):
     x, y = N//2, N//2
     d, s = shark_move[cnt]
     dx, dy = shark_steps[d]
-    remove_index = []
+    remove_index = set()
     for i in range(1, s+1):
         x += dx
         y += dy
-        remove_index.append((x, y))
+        remove_index.add((x, y))
 def make_index():
     global Map, steps, N, L_value, L_index, steps
     x, y = N//2, N//2
@@ -117,7 +117,7 @@ L_value = []
 L_index = []
 make_index()
 make_value()
-remove_index = []
+remove_index = set()
 for cnt in range(M):
     # 삭제할 인덱스 만들기
     make_remove_index(cnt)
